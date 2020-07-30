@@ -1,0 +1,39 @@
+{
+    "name": "sinri/ark-web",
+    "description": "Ark Web Component",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Sinri Edogawa",
+            "email": "e.joshua.s.e@gmail.com"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {
+        "sinri/ark-core": "^2.7",
+        "ralouphie/getallheaders": "^2.0",
+        "jenssegers/agent": "^2.6",
+        "ralouphie/mimey": "^1.0"
+    },
+    "require-dev": {
+        "sinri/ark-curl": "^2.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "sinri\\ark\\web\\": "src/web/",
+            "sinri\\ark\\io\\": "src/io/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "sinri\\ark\\web\\test\\": "test/"
+        }
+    },
+    "repositories": {
+        "packagist": {
+            "type": "composer",
+            "url": "https://mirrors.aliyun.com/composer/"
+        }
+    }
+}
