@@ -76,7 +76,7 @@ class ArkWebService
 
     public function __construct()
     {
-        $this->startTime = time();
+        $this->startTime = microtime(true);
         $this->endTime = -1;
         $this->requestSerial = uniqid();
         $this->gateway = "index.php";
@@ -213,11 +213,12 @@ class ArkWebService
                 ArkWebInput::getSharedInstance()->getRequestMethod()
             );
             $code = 0;
+            $route->setParsed($arguments);
             $route->execute($path, $this->sharedData, $code);
         } catch (Exception $exception) {
             $this->logger->error("Exception in " . __METHOD__ . " : " . $exception->getMessage());
         } finally {
-            $this->endTime = time();
+            $this->endTime = microtime(true);
             if (is_callable($this->finalHandler)) {
                 call_user_func_array($this->finalHandler, []);
             }
@@ -251,7 +252,7 @@ class ArkWebService
                 echo "<pre>" . PHP_EOL . print_r($exception, true) . "</pre>" . PHP_EOL;
             }
         } finally {
-            $this->endTime = time();
+            $this->endTime = microtime(true);
             if (is_callable($this->finalHandler)) {
                 call_user_func_array($this->finalHandler, []);
             }

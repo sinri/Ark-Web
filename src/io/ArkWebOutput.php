@@ -21,6 +21,7 @@ class ArkWebOutput
     const CONTENT_TYPE_OCTET_STREAM = 'application/octet-stream';
 
     const CHARSET_UTF8 = "UTF-8";
+    const CHARSET_GBK = "GBK";
 
     /**
      * @var ArkWebOutput
@@ -28,11 +29,63 @@ class ArkWebOutput
     protected static $instance;
 
     /**
+     * @var callable such as function($anythingToBeEncoded,$errorMessage,$errorCode)
+     * @since 3.4.0
+     */
+    protected $jsonEncodeErrorHandler;
+    /**
+     * @var callable such as function($templatePath,$params)
+     * @since 3.4.0
+     */
+    protected $displayPageTemplateMissingHandler;
+
+    /**
+     * @return callable
+     * @since 3.4.0
+     */
+    public function getDisplayPageTemplateMissingHandler()
+    {
+        return $this->displayPageTemplateMissingHandler;
+    }
+
+    /**
+     * @param callable $displayPageTemplateMissingHandler such as function($templatePath,$params)
+     * @return ArkWebOutput
+     * @since 3.4.0
+     */
+    public function setDisplayPageTemplateMissingHandler(callable $displayPageTemplateMissingHandler): ArkWebOutput
+    {
+        $this->displayPageTemplateMissingHandler = $displayPageTemplateMissingHandler;
+        return $this;
+    }
+
+    /**
+     * @return callable
+     * @since 3.4.0
+     */
+    public function getJsonEncodeErrorHandler()
+    {
+        return $this->jsonEncodeErrorHandler;
+    }
+
+    /**
+     * @param callable $jsonEncodeErrorHandler such as function($anythingToBeEncoded,$errorMessage,$errorCode)
+     * @return ArkWebOutput
+     * @since 3.4.0
+     */
+    public function setJsonEncodeErrorHandler(callable $jsonEncodeErrorHandler): ArkWebOutput
+    {
+        $this->jsonEncodeErrorHandler = $jsonEncodeErrorHandler;
+        return $this;
+    }
+
+    /**
      * @return ArkWebOutput
      */
-    public static function getSharedInstance(){
-        if(self::$instance===null){
-            self::$instance=new ArkWebOutput();
+    public static function getSharedInstance()
+    {
+        if (self::$instance === null) {
+            self::$instance = new ArkWebOutput();
         }
         return self::$instance;
     }
@@ -78,15 +131,21 @@ class ArkWebOutput
      * @param mixed $anything
      * @param int $options
      * @param int $depth
-     * @throws Exception @since 3.2.2
+     * Exception thrown @since 3.2.2 and could be handled @since 3.4.0
      */
     public function json($anything, $options = 0, $depth = 512)
     {
         $response = json_encode($anything, $options, $depth);
         if ($response === false) {
-            throw new Exception("JSON ENCODING FAILED: " . json_last_error_msg());
+            //throw new Exception("JSON ENCODING FAILED: " . json_last_error_msg());
+            if (is_callable($this->jsonEncodeErrorHandler)) {
+                call_user_func_array($this->jsonEncodeErrorHandler, [$anything, json_last_error_msg(), json_last_error()]);
+            } else {
+                echo "JSON ENCODING FAILED: " . json_last_error_msg();
+            }
+        } else {
+            echo $response;
         }
-        echo $response;
     }
 
     /**
@@ -94,28 +153,30 @@ class ArkWebOutput
      * @param mixed $data
      * @param int $options @since 3.2.2
      * @param int $depth @since 3.2.2
-     * @throws Exception @since 3.2.2
+     * Exception thrown @since 3.2.2 and could be handled @since 3.4.0
      */
     public function jsonForAjax($code = self::AJAX_JSON_CODE_OK, $data = '', $options = 0, $depth = 512)
     {
-        $response = json_encode(["code" => $code, "data" => $data], $options, $depth);
-        if ($response === false) {
-            throw new Exception("JSON ENCODING FAILED: " . json_last_error_msg());
-        }
-        echo $response;
+        $this->json(["code" => $code, "data" => $data], $options, $depth);
     }
 
     /**
      * @param string $templateFile
      * @param array $params
-     * @throws Exception
+     * Exception thrown @since 3.2.2 and could be handled @since 3.4.0
      */
     public function displayPage($templateFile, $params = [])
     {
-        extract($params);
         if (!file_exists($templateFile)) {
-            throw new Exception("Template file [{$templateFile}] not found.");
+            if (is_callable($this->displayPageTemplateMissingHandler)) {
+                call_user_func_array($this->displayPageTemplateMissingHandler, [$templateFile, $params]);
+            } else {
+                echo 'Template is missing';
+            }
+            //throw new Exception("Template file [{$templateFile}] not found.");
+            return;
         }
+        extract($params);
         /** @noinspection PhpIncludeInspection */
         require $templateFile;
     }
