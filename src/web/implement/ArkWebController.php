@@ -159,7 +159,6 @@ class ArkWebController
     /**
      * @param mixed $json anything in json to be packaged to be responded
      * @param int $httpCode
-     * @throws Exception
      * @since 3.1.7
      */
     protected function _sayJson($json, $httpCode = 200)
@@ -174,7 +173,6 @@ class ArkWebController
     /**
      * @param mixed $data
      * @param int $httpCode
-     * @throws Exception
      */
     protected function _sayOK($data = "", $httpCode = 200)
     {
@@ -188,7 +186,6 @@ class ArkWebController
     /**
      * @param mixed $error
      * @param int $httpCode
-     * @throws Exception
      */
     protected function _sayFail($error = "", $httpCode = 200)
     {
@@ -206,13 +203,13 @@ class ArkWebController
      */
     protected function _showPage($templateFile, $params = [], $httpCode = 200)
     {
-        try {
-            //Ark()->webOutput()
-            ArkWebOutput::getSharedInstance()
-                ->sendHTTPCode($httpCode)
-                ->displayPage($templateFile, $params);
-        } catch (Exception $e) {
-            echo $e->getMessage();
-        }
+        //try {
+        //Ark()->webOutput()
+        ArkWebOutput::getSharedInstance()
+            ->sendHTTPCode($httpCode)
+            ->displayPage($templateFile, $params);
+//        } catch (Exception $e) {
+//            echo $e->getMessage();
+//        }
     }
 }
