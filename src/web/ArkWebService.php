@@ -18,6 +18,10 @@ use sinri\ark\io\ArkWebOutput;
 class ArkWebService
 {
     /**
+     * @var ArkWebService
+     */
+    protected static $instance;
+    /**
      * @var bool
      */
     protected $debug;
@@ -29,19 +33,20 @@ class ArkWebService
      * @var ArkRouter
      */
     protected $router;
-
     /**
      * @var string
      */
     protected $requestSerial;
     /**
-     * @var int
+     * @var float
      * @since 3.2.3
+     * @since 3.4.1 from int to float
      */
     protected $startTime;
     /**
-     * @var int
+     * @var float
      * @since 3.2.3
+     * @since 3.4.1 from int to float
      */
     protected $endTime;
     /**
@@ -58,21 +63,11 @@ class ArkWebService
      * @since 3.2.3
      */
     protected $sharedData;
-
     /**
-     * @var ArkWebService
+     * @var string
+     * @since 3.4.1
      */
-    protected static $instance;
-
-    /**
-     * @return ArkWebService
-     */
-    public static function getSharedInstance(){
-        if(self::$instance===null){
-            self::$instance=new ArkWebService();
-        }
-        return self::$instance;
-    }
+    protected $currentRequestPath;
 
     public function __construct()
     {
@@ -87,19 +82,53 @@ class ArkWebService
     }
 
     /**
-     * @return int
+     * @return ArkWebService
      */
-    public function getStartTime(): int
+    public static function getSharedInstance()
+    {
+        if (self::$instance === null) {
+            self::$instance = new ArkWebService();
+        }
+        return self::$instance;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCurrentRequestPath(): string
+    {
+        return $this->currentRequestPath;
+    }
+
+    /**
+     * @return float
+     * @since 3.4.1 from int to float
+     */
+    public function getStartTime(): float
     {
         return $this->startTime;
     }
 
     /**
-     * @return int
+     * @return float
+     * @since 3.4.1 from int to float
      */
-    public function getEndTime(): int
+    public function getEndTime(): float
     {
         return $this->endTime;
+    }
+
+    /**
+     * @return float The seconds, from start to end (or now, if not ended yet)
+     * @since 3.4.1
+     */
+    public function getRequestProcessedSeconds(): float
+    {
+        if ($this->endTime > 0) {
+            return $this->endTime - $this->startTime;
+        } else {
+            return microtime(true) - $this->startTime;
+        }
     }
 
     /**
@@ -207,14 +236,15 @@ class ArkWebService
             for ($i = 2; $i < $argc; $i++) {
                 $arguments[] = $argv[$i];
             }
+            $this->currentRequestPath = $path;
             $route = $this->router->seekRoute(
-                $path,
+                $this->currentRequestPath,
                 //Ark()->webInput()->getRequestMethod()
                 ArkWebInput::getSharedInstance()->getRequestMethod()
             );
             $code = 0;
             $route->setParsed($arguments);
-            $route->execute($path, $this->sharedData, $code);
+            $route->execute($this->currentRequestPath, $this->sharedData, $code);
         } catch (Exception $exception) {
             $this->logger->error("Exception in " . __METHOD__ . " : " . $exception->getMessage());
         } finally {
@@ -232,14 +262,14 @@ class ArkWebService
     public function handleRequestForWeb()
     {
         try {
-            $this->dividePath($path_string);
+            $this->dividePath($this->currentRequestPath);
             $route = $this->router->seekRoute(
-                $path_string,
+                $this->currentRequestPath,
                 //Ark()->webInput()->getRequestMethod()
                 ArkWebInput::getSharedInstance()->getRequestMethod()
             );
             $code = 200;
-            $route->execute($path_string, $this->sharedData, $code);
+            $route->execute($this->currentRequestPath, $this->sharedData, $code);
         } catch (Exception $exception) {
             $this->router->handleRouteError(
                 [
