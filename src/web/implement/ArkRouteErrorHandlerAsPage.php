@@ -4,38 +4,46 @@
 namespace sinri\ark\web\implement;
 
 
-use Exception;
 use sinri\ark\io\ArkWebOutput;
+use sinri\ark\io\exception\TemplateFileNotFoundError;
 use sinri\ark\web\ArkRouteErrorHandlerInterface;
 
-abstract class ArkRouteErrorHandlerAsPage implements ArkRouteErrorHandlerInterface
+class ArkRouteErrorHandlerAsPage implements ArkRouteErrorHandlerInterface
 {
     /**
      * @var string
      */
     protected $templateFile;
 
-    public function __construct()
+    /**
+     * ArkRouteErrorHandlerAsPage constructor.
+     * @param string $templateFile
+     */
+    public function __construct($templateFile = '')
     {
-        $this->templateFile = $this->getTemplateFile();
+        $this->templateFile = $templateFile;
     }
 
     /**
+     * Override this, if you need a special template file selector
      * @return string
      */
-    abstract public function getTemplateFile();
+    public function getTemplateFile()
+    {
+        return $this->templateFile;
+    }
 
     public function execute($errorData = [], $http_code = 404)
     {
         try {
-            if (!is_string($this->templateFile) || !file_exists($this->templateFile)) {
-                throw new Exception("ArkRouteErrorHandler::Template file is not available.");
+            $templateFile = $this->getTemplateFile();
+            if (!is_string($templateFile) || !file_exists($templateFile)) {
+                throw new TemplateFileNotFoundError($templateFile);
             }
-            //Ark()->webOutput()
             ArkWebOutput::getSharedInstance()
                 ->sendHTTPCode($http_code)
-                ->displayPage($this->templateFile, $errorData);
-        } catch (Exception $exception) {
+                ->displayPage($templateFile, $errorData);
+        } catch (TemplateFileNotFoundError $exception) {
             echo $exception->getMessage() . PHP_EOL . $exception->getTraceAsString();
         }
     }

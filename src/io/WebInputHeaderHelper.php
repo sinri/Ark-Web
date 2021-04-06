@@ -40,10 +40,10 @@ class WebInputHeaderHelper
     }
 
     /**
-     * @param $name
-     * @param null $default
-     * @param null $regex
-     * @return mixed|null
+     * @param string $name
+     * @param string|null $default
+     * @param string|null $regex
+     * @return string|null
      */
     public function getHeader($name, $default = null, $regex = null)
     {

@@ -30,7 +30,7 @@ class ArkWebController
      */
     public function __construct()
     {
-        $this->filterGeneratedData = ArkWebService::getSharedInstance()->getSharedData();//Ark()->webService()->getSharedData();
+        $this->filterGeneratedData = ArkWebService::getSharedInstance()->getSharedData();
     }
 
     /**
@@ -73,8 +73,7 @@ class ArkWebController
      */
     protected function _readRequest($name, $default = null, $regex = null, &$error = null)
     {
-        return //Ark()->webInput()
-            ArkWebInput::getSharedInstance()
+        return ArkWebInput::getSharedInstance()
             ->readRequest($name, $default, $regex, $error);
     }
 
@@ -86,8 +85,7 @@ class ArkWebController
      */
     protected function _readCookie($name, $default = null, $regex = null)
     {
-        return //Ark()->webInput()
-            ArkWebInput::getSharedInstance()
+        return ArkWebInput::getSharedInstance()
             ->readCookie($name, $default, $regex);
     }
 
@@ -100,8 +98,7 @@ class ArkWebController
      */
     protected function _readSession($name, $default = null, $regex = null)
     {
-        return //Ark()->webInput()
-            ArkWebInput::getSharedInstance()
+        return ArkWebInput::getSharedInstance()
             ->readSession($name, $default, $regex);
     }
 
@@ -114,8 +111,7 @@ class ArkWebController
      */
     protected function _readServer($name, $default = null, $regex = null)
     {
-        return //Ark()->webInput()
-            ArkWebInput::getSharedInstance()
+        return ArkWebInput::getSharedInstance()
             ->readServer($name, $default, $regex);
     }
 
@@ -128,8 +124,7 @@ class ArkWebController
      */
     protected function _readIndispensableRequest($name, $checker)
     {
-        return //Ark()->webInput()
-            ArkWebInput::getSharedInstance()
+        return ArkWebInput::getSharedInstance()
             ->readIndispensableRequest($name, $checker);
     }
 
@@ -139,8 +134,7 @@ class ArkWebController
      */
     protected function _getRequestSerial()
     {
-        return //Ark()->webService()
-            ArkWebService::getSharedInstance()
+        return ArkWebService::getSharedInstance()
             ->getRequestSerial();
     }
 
@@ -163,7 +157,6 @@ class ArkWebController
      */
     protected function _sayJson($json, $httpCode = 200)
     {
-        //Ark()->webOutput()
         ArkWebOutput::getSharedInstance()
             ->sendHTTPCode($httpCode)
             ->setContentTypeHeader(ArkWebOutput::CONTENT_TYPE_JSON)
@@ -176,7 +169,6 @@ class ArkWebController
      */
     protected function _sayOK($data = "", $httpCode = 200)
     {
-        //Ark()->webOutput()
         ArkWebOutput::getSharedInstance()
             ->sendHTTPCode($httpCode)
             ->setContentTypeHeader(ArkWebOutput::CONTENT_TYPE_JSON)
@@ -189,7 +181,6 @@ class ArkWebController
      */
     protected function _sayFail($error = "", $httpCode = 200)
     {
-        //Ark()->webOutput()
         ArkWebOutput::getSharedInstance()
             ->sendHTTPCode($httpCode)
             ->setContentTypeHeader(ArkWebOutput::CONTENT_TYPE_JSON)
@@ -203,13 +194,8 @@ class ArkWebController
      */
     protected function _showPage($templateFile, $params = [], $httpCode = 200)
     {
-        //try {
-        //Ark()->webOutput()
         ArkWebOutput::getSharedInstance()
             ->sendHTTPCode($httpCode)
             ->displayPage($templateFile, $params);
-//        } catch (Exception $e) {
-//            echo $e->getMessage();
-//        }
     }
 }

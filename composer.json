@@ -18,7 +18,8 @@
         "ext-json": "*"
     },
     "require-dev": {
-        "sinri/ark-curl": "^2.1"
+        "sinri/ark-curl": "^2.1",
+        "ext-curl": "*"
     },
     "autoload": {
         "psr-4": {

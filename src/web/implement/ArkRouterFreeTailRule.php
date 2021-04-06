@@ -4,8 +4,9 @@
 namespace sinri\ark\web\implement;
 
 
-use Exception;
 use sinri\ark\web\ArkRouterRule;
+use sinri\ark\web\exception\ArkFilterRefuseRequestException;
+use sinri\ark\web\exception\GivenCallbackIsNotCallableException;
 
 /**
  * Class ArkRouterFreeTailRule
@@ -58,33 +59,14 @@ class ArkRouterFreeTailRule extends ArkRouterRule
     public static function buildRouteRule($methods, $path, $callback, $filters = [])
     {
         return new ArkRouterFreeTailRule($methods, $path, $callback, $filters);
-
-//        $new_route = new ArkRouterFreeTailRule();
-//
-//        $path = preg_replace('/\//', '\/', $path);
-//        $matched = preg_match_all('/{([^\/]+)}/', $path, $matches);
-//        if ($matched) {
-//            $regex = preg_replace('/{([^\/]+)}/', '([^\/]+)', $path);
-//            $new_route->headComponentsCount = count($matches[0]);
-//        } else {
-//            $regex = $path;
-//            $new_route->headComponentsCount = 0;
-//        }
-//        $regex = '/^\/' . $regex . '\/?(.*)$/';
-//
-//        $new_route->setMethod($method);
-//        $new_route->setPath($regex);
-//        $new_route->setCallback($callback);
-//        $new_route->setFilters($filters);
-//
-//        return $new_route;
     }
 
     /**
      * @param $path_string
      * @param array|mixed $preparedData @since 1.1 this became reference and bug fixed
      * @param int $responseCode @since 1.1 this became reference
-     * @throws Exception
+     * @throws ArkFilterRefuseRequestException
+     * @throws GivenCallbackIsNotCallableException
      */
     public function execute($path_string, &$preparedData = [], &$responseCode = 200)
     {

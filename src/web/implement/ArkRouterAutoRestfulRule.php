@@ -50,11 +50,6 @@ class ArkRouterAutoRestfulRule extends ArkRouterRule
      */
     public function checkIfMatchRequest($method, $incomingPath, $logger = null)
     {
-//        echo __METHOD__.'@'.__LINE__.' debug beginning!'.PHP_EOL;
-//        var_dump($method); // GET
-//        var_dump($incomingPath); // '/xxxx' or '/', wonder ''
-//        var_dump($this->path);
-
         if ($logger) {
             $logger->debug(
                 __METHOD__ . '@' . __LINE__ . ' this rule: ' . $this->__toString(),
@@ -88,7 +83,6 @@ class ArkRouterAutoRestfulRule extends ArkRouterRule
         $components = explode('/', $incomingPath);
         $components = array_filter($components);// not url-decoded yet
         $components = array_values($components);
-//        var_dump($components);
 
         // confirm class
         $className = $this->namespace;
@@ -118,8 +112,6 @@ class ArkRouterAutoRestfulRule extends ArkRouterRule
             }
 
             while ($i < count($components)) {
-//            var_dump($components);
-//            var_dump($i);
                 $className .= '\\' . $components[$i];
                 $i++;
                 if (class_exists($className, true)) {

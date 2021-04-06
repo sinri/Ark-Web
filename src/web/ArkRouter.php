@@ -9,12 +9,13 @@
 namespace sinri\ark\web;
 
 
-use Exception;
 use Psr\Log\LogLevel;
 use ReflectionClass;
+use ReflectionException;
 use sinri\ark\core\ArkLogger;
 use sinri\ark\io\ArkWebInput;
 use sinri\ark\io\ArkWebOutput;
+use sinri\ark\web\exception\ArkRouteNoMatchedException;
 use sinri\ark\web\implement\ArkRouteErrorHandlerAsJson;
 use sinri\ark\web\implement\ArkRouterAutoRestfulRule;
 use sinri\ark\web\implement\ArkRouterFreeTailRule;
@@ -110,7 +111,6 @@ class ArkRouter
     /**
      * @param array $errorData
      * @param int $httpCode @since 1.2.8
-     * @throws Exception
      */
     public function handleRouteError($errorData = [], $httpCode = 404)
     {
@@ -325,10 +325,10 @@ class ArkRouter
     }
 
     /**
-     * @param $incomingPath
-     * @param $method
+     * @param string $incomingPath
+     * @param string $method
      * @return mixed|ArkRouterRule
-     * @throws Exception
+     * @throws ArkRouteNoMatchedException
      */
     public function seekRoute($incomingPath, $method)
     {
@@ -349,7 +349,7 @@ class ArkRouter
                 return $rule;
             }
         }
-        throw new Exception("No route matched: path={$incomingPath} method={$method}", 404);
+        throw new ArkRouteNoMatchedException($incomingPath, $method);
     }
 
     /**
@@ -536,7 +536,7 @@ class ArkRouter
                     $this->registerRouteRule($route_rule);
                 }
             }
-        } catch (Exception $exception) {
+        } catch (ReflectionException $e) {
             // do nothing if class not exist
         }
         return $this;

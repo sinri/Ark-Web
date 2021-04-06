@@ -9,7 +9,7 @@
 namespace sinri\ark\web;
 
 
-use Exception;
+use sinri\ark\web\exception\NotArkRequestFilterInstanceException;
 
 abstract class ArkRequestFilter
 {
@@ -23,10 +23,10 @@ abstract class ArkRequestFilter
             try {
                 // @since 3.1.10 check class type
                 if (!is_a($class_name, self::class, true)) {
-                    throw new Exception("Fallback while class {$class_name} does not exist.");
+                    throw new NotArkRequestFilterInstanceException($class_name);
                 }
                 return class_exists($class_name) ? new $class_name() : self::generateFilter(true, 'Required a filter not existed.', 500);
-            } catch (Exception $exception) {
+            } catch (NotArkRequestFilterInstanceException $exception) {
                 return self::generateFilter(true, 'Exception in requiring a filter: ' . $exception->getMessage(), 500);
             }
         }

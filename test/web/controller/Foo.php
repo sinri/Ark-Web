@@ -40,6 +40,6 @@ class Foo extends ArkWebController
      */
     public function error()
     {
-        throw new Exception("miao", 666);
+        throw new Exception("au", 666);
     }
 }

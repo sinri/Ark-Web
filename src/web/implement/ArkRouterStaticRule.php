@@ -69,7 +69,7 @@ class ArkRouterStaticRule extends ArkRouterRule
         return "ArkRouterStaticRule";
     }
 
-    protected function preprocessIncomingPath($incomingPath)
+    protected function preprocessIncomingPath(string $incomingPath)
     {
         return $incomingPath;
     }

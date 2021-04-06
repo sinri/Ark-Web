@@ -9,17 +9,25 @@
 namespace sinri\ark\web;
 
 
-use Exception;
 use SessionHandlerInterface;
 
 class ArkWebSession implements SessionHandlerInterface
 {
-    protected $session_id;
-    protected $session_name;
+    /**
+     * @var string
+     */
+    protected $sessionId;
+    /**
+     * @var string
+     */
+    protected $sessionName;
+    /**
+     * @var string
+     */
     private $savePath;
 
     /**
-     * @param null $sessionDir
+     * @param string|null $sessionDir
      */
     public static function sessionStart($sessionDir = null)
     {
@@ -33,48 +41,49 @@ class ArkWebSession implements SessionHandlerInterface
         session_start();
         //获取当前会话 ID
         $session_id = session_id();
-        $handler->setSessionID($session_id);
+        $handler->setSessionId($session_id);
         //读取会话名称
         $session_name = session_name();
         $handler->setSessionName($session_name);
     }
 
-    /**
-     * A special entrance with Redis @param mixed actually ArkRedis $redisAgent such as new Client($single_server, array('prefix' => 'sessions:'));
-     * @param int $sessionLifetime
-     * @throws Exception
-     * @uses `\Predis\Session\Handler`
-     * Instantiate a new client just like you would normally do. Using a prefix for
-     * keys will effectively prefix all session keys with the specified string.
-     * @deprecated in short time manually seek new implementation @uses `sinri\ark\web\ArkWebSessionWithRedis`
-     */
-    public static function sessionStartWithRedis($redisAgent, $sessionLifetime = 3600)
+//    /**
+//     * A special entrance with Redis @param mixed actually ArkRedis $redisAgent such as new Client($single_server, array('prefix' => 'sessions:'));
+//     * @param int $sessionLifetime
+//     * @uses `\Predis\Session\Handler`
+//     * Instantiate a new client just like you would normally do. Using a prefix for
+//     * keys will effectively prefix all session keys with the specified string.
+//     * @deprecated in short time manually seek new implementation @uses `sinri\ark\web\ArkWebSessionWithRedis`
+//     */
+//    public static function sessionStartWithRedis($redisAgent, $sessionLifetime = 3600)
+//    {
+//        if (class_exists("sinri\\ark\\web\\ArkWebSessionWithRedis")) {
+//            call_user_func_array(['sinri\\ark\\web\\ArkWebSessionWithRedis', 'sessionStartWithRedis'], [$redisAgent, $sessionLifetime]);
+//        } else {
+//            throw new RuntimeException("Ark Redis Component is not found!");
+//        }
+//    }
+
+    public function getSessionId()
     {
-        if (class_exists("sinri\\ark\\web\\ArkWebSessionWithRedis")) {
-            call_user_func_array(['sinri\\ark\\web\\ArkWebSessionWithRedis', 'sessionStartWithRedis'], [$redisAgent, $sessionLifetime]);
-        } else {
-            throw new Exception("Ark Redis Component is not found!");
-        }
+        return $this->sessionId;
     }
 
-    public function getSessionID()
+    public function setSessionId($id)
     {
-        return $this->session_id;
-    }
-
-    public function setSessionID($id)
-    {
-        $this->session_id = $id;
+        $this->sessionId = $id;
+        return $this;
     }
 
     public function getSessionName()
     {
-        return $this->session_name;
+        return $this->sessionName;
     }
 
     public function setSessionName($name)
     {
-        $this->session_name = $name;
+        $this->sessionName = $name;
+        return $this;
     }
 
     // interface
@@ -82,15 +91,15 @@ class ArkWebSession implements SessionHandlerInterface
     /**
      * Re-initialize existing session, or creates a new one.
      * Called when a session starts or when session_start() is invoked.
-     * @param $savePath
-     * @param $sessionName
+     * @param string $save_path <- $savePath
+     * @param string $name <- $sessionName
      * @return boolean
      */
-    public function open($savePath, $sessionName)
+    public function open($save_path, $name)
     {
-        $this->savePath = $savePath;
+        $this->savePath = $save_path;
         if (!is_dir($this->savePath)) {
-            mkdir($this->savePath, 0777);
+            mkdir($this->savePath);
         }
 
         return true;
@@ -111,12 +120,12 @@ class ArkWebSession implements SessionHandlerInterface
      * Reads the session data from the session storage, and returns the results.
      * Called right after the session starts or when session_start() is called.
      * Please note that before this method is called SessionHandlerInterface::open() is invoked.
-     * @param $id
+     * @param string $session_id <- $id
      * @return string
      */
-    public function read($id)
+    public function read($session_id)
     {
-        return (string)@file_get_contents("{$this->savePath}/sess_{$id}");
+        return (string)@file_get_contents("{$this->savePath}/sess_{$session_id}");
     }
 
     /**
@@ -124,25 +133,25 @@ class ArkWebSession implements SessionHandlerInterface
      * Called by session_write_close(), when session_register_shutdown() fails,
      * or during a normal shutdown.
      * Note: SessionHandlerInterface::close() is called immediately after this function.
-     * @param $id
-     * @param $data
-     * @return string
+     * @param string $session_id <- $id
+     * @param string $session_data <- $data
+     * @return bool
      */
-    public function write($id, $data)
+    public function write($session_id, $session_data)
     {
-        return file_put_contents("{$this->savePath}/sess_{$id}", $data) === false ? false : true;
+        return file_put_contents("{$this->savePath}/sess_{$session_id}", $session_data) === false ? false : true;
     }
 
     /**
      * Destroys a session.
      * Called by session_regenerate_id() (with $destroy = TRUE),
      * session_destroy() and when session_decode() fails.
-     * @param $id
+     * @param string $session_id <- $id
      * @return boolean
      */
-    public function destroy($id)
+    public function destroy($session_id)
     {
-        $file = "{$this->savePath}/sess_{$id}";
+        $file = "{$this->savePath}/sess_{$session_id}";
         if (file_exists($file)) {
             unlink($file);
         }
@@ -154,7 +163,7 @@ class ArkWebSession implements SessionHandlerInterface
      * Cleans up expired sessions.
      * Called by session_start(), based on session.gc_divisor,
      * session.gc_probability and session.gc_maxlifetime settings.
-     * @param $maxlifetime
+     * @param int $maxlifetime
      * @return boolean
      */
     public function gc($maxlifetime)

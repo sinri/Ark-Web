@@ -207,7 +207,6 @@ class ArkWebService
 
     /**
      * This is commonly a final call after other configurations
-     * @throws Exception
      */
     public function handleRequest()
     {
@@ -227,7 +226,7 @@ class ArkWebService
         global $argv;
         try {
             // php index.php [PATH] [ARGV]
-            $path = ArkHelper::readTarget($argv, 1, null);
+            $path = ArkHelper::readTarget($argv, 1);
             if ($path === null) {
                 $this->logger->error("PATH EMPTY", [$path]);
                 return;
@@ -257,7 +256,6 @@ class ArkWebService
 
     /**
      * This is commonly a final call after other configurations
-     * @throws Exception
      */
     public function handleRequestForWeb()
     {
@@ -417,10 +415,8 @@ class ArkWebService
             } else {
                 // show content
                 if (is_callable($fileHandler)) {
-                    //$extension=pathinfo($realPath,PATHINFO_EXTENSION);
                     call_user_func_array($fileHandler, [$realPath, $components]);
                 } else {
-                    //Ark()->webOutput()
                     ArkWebOutput::getSharedInstance()
                         ->downloadFileIndirectly($realPath);
                 }

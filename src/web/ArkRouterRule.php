@@ -8,10 +8,11 @@
 
 namespace sinri\ark\web;
 
-use Exception;
 use sinri\ark\core\ArkHelper;
 use sinri\ark\core\ArkLogger;
 use sinri\ark\io\ArkWebInput;
+use sinri\ark\web\exception\ArkFilterRefuseRequestException;
+use sinri\ark\web\exception\GivenCallbackIsNotCallableException;
 
 /**
  * Interface ArkRouterRule
@@ -273,7 +274,8 @@ abstract class ArkRouterRule
      * @param $path_string
      * @param array|mixed $preparedData @since 1.1 this became reference and bug fixed
      * @param int $responseCode @since 1.1 this became reference
-     * @throws Exception
+     * @throws ArkFilterRefuseRequestException
+     * @throws GivenCallbackIsNotCallableException
      */
     public function execute($path_string, &$preparedData = [], &$responseCode = 200)
     {
@@ -291,7 +293,7 @@ abstract class ArkRouterRule
      * @param $path_string
      * @param array $preparedData
      * @param int $responseCode
-     * @throws Exception
+     * @throws ArkFilterRefuseRequestException
      */
     protected static function executeWithFilters($params, $filter_chain, $path_string, &$preparedData = [], &$responseCode = 200)
     {
@@ -311,8 +313,9 @@ abstract class ArkRouterRule
                 $filterError
             );
             if (!$shouldAcceptRequest) {
-                throw new Exception(
-                    "Your request is rejected by [" . $filter_instance->filterTitle() . "], reason: " . $filterError,
+                throw new ArkFilterRefuseRequestException(
+                    $filterError,
+                    $filter_instance->filterTitle(),
                     $responseCode
                 );
             }
@@ -322,13 +325,13 @@ abstract class ArkRouterRule
     /**
      * @param $callable
      * @param $params
-     * @throws Exception
+     * @throws GivenCallbackIsNotCallableException
      */
     protected static function executeWithParameters($callable, $params)
     {
         if (is_array($callable)) {
-            if (count($callable) < 2) {
-                throw new Exception("Callback Array Format Mistakes", (ArkHelper::isCLI() ? -1 : 500));
+            if (count($callable) !== 2) {
+                throw new GivenCallbackIsNotCallableException($callable, (ArkHelper::isCLI() ? -1 : 500));
             }
             $class_instance_name = $callable[0];
             $class_instance = new $class_instance_name();
@@ -343,7 +346,11 @@ abstract class ArkRouterRule
      */
     abstract public function getType();
 
-    protected function preprocessIncomingPath($incomingPath)
+    /**
+     * @param string $incomingPath
+     * @return false|string
+     */
+    protected function preprocessIncomingPath(string $incomingPath)
     {
         $path = $incomingPath;// as is for static
         if (strlen($incomingPath) > 1 && substr($incomingPath, strlen($incomingPath) - 1, 1) == '/') {
@@ -354,14 +361,14 @@ abstract class ArkRouterRule
         return $path;
     }
 
-    protected function checkIfMatchMethod($method)
+    protected function checkIfMatchMethod(string $method)
     {
         return $this->forAnyMethod || in_array($method, $this->methods);
     }
 
     /**
-     * @param $method
-     * @param $incomingPath
+     * @param string $method
+     * @param string $incomingPath
      * @param null|ArkLogger $logger
      * @return boolean
      */

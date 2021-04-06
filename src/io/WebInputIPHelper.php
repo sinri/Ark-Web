@@ -9,8 +9,8 @@
 namespace sinri\ark\io;
 
 
-use Exception;
 use sinri\ark\core\ArkHelper;
+use sinri\ark\io\exception\IPFormatError;
 
 class WebInputIPHelper
 {
@@ -72,7 +72,6 @@ class WebInputIPHelper
         $ip_address = ArkHelper::readTarget($_SERVER, 'REMOTE_ADDR');
 
         if ($proxy_ips) {
-            $spoof = false;
             foreach (array('HTTP_X_FORWARDED_FOR', 'HTTP_CLIENT_IP', 'HTTP_X_CLIENT_IP', 'HTTP_X_CLUSTER_CLIENT_IP') as $header) {
                 if (($spoof = ArkHelper::readTarget($_SERVER, $header)) !== NULL) {
                     // Some proxies typically list the whole chain of IP
@@ -198,13 +197,13 @@ class WebInputIPHelper
     /**
      * @param int[] $ipv4components [X,X,X,X]
      * @return string "0101010...00101"
-     * @throws Exception
+     * @throws IPFormatError
      */
     protected function ipv4ToBinaryString($ipv4components)
     {
         for ($i = 0; $i < 4; $i++) {
             if ($ipv4components[$i] < 0 || $ipv4components[$i] > 255) {
-                throw new Exception("Illegal IPv4 With Mask Expression - ip - " . $i);
+                throw new IPFormatError(implode('.', $ipv4components));
             }
         }
         $bins = "";
@@ -222,23 +221,23 @@ class WebInputIPHelper
      * @param string $ipv4WithMask X.X.X.X/Y
      * @param string $ipv4 Z.Z.Z.Z
      * @return bool
-     * @throws Exception
+     * @throws IPFormatError
      * @since 3.0.2
      */
     public function compareIPv4WithMask($ipv4WithMask, $ipv4)
     {
         if (!preg_match('/^(\d+)\.(\d+)\.(\d+)\.(\d+)\/(\d+)$/', $ipv4WithMask, $matches)) {
-            throw new Exception("Illegal IPv4 With Mask Expression - whole");
+            throw new IPFormatError($ipv4WithMask);
         }
         if ($matches[5] < 0 || $matches[5] > 32) {
-            throw new Exception("Illegal IPv4 With Mask Expression - mask");
+            throw new IPFormatError($ipv4WithMask);
         }
 
         $mask = $matches[5];
         $full = $this->ipv4ToBinaryString(array_slice($matches, 1, 4));
 
         if (!preg_match('/^(\d+)\.(\d+)\.(\d+)\.(\d+)$/', $ipv4, $matches)) {
-            throw new Exception("Illegal IPv4 Expression - whole");
+            throw new IPFormatError($ipv4);
         }
         $target = $this->ipv4ToBinaryString(array_slice($matches, 1, 4));
 
