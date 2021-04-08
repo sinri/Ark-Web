@@ -5,7 +5,7 @@ namespace sinri\ark\io\exception;
 
 
 use sinri\ark\core\ArkHelper;
-use sinri\ark\core\Exception\EnsureItemException;
+use sinri\ark\core\exception\EnsureItemException;
 use Throwable;
 
 /**

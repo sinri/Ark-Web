@@ -5,7 +5,7 @@ namespace sinri\ark\io\traits;
 
 
 use sinri\ark\core\ArkHelper;
-use sinri\ark\core\Exception\LookUpTargetException;
+use sinri\ark\core\exception\LookUpTargetException;
 use sinri\ark\io\ArkWebInput;
 use sinri\ark\io\exception\RequestedFieldMissingError;
 use sinri\ark\io\exception\RequestFieldInvalidatedError;
