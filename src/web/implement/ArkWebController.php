@@ -9,11 +9,14 @@
 namespace sinri\ark\web\implement;
 
 
-use Exception;
 use sinri\ark\core\ArkHelper;
+use sinri\ark\core\exception\LookUpTargetException;
 use sinri\ark\io\ArkWebInput;
 use sinri\ark\io\ArkWebOutput;
+use sinri\ark\io\exception\RequestedFieldMissingError;
+use sinri\ark\io\exception\RequestFieldInvalidatedError;
 use sinri\ark\web\ArkWebService;
+use sinri\ark\web\exception\ArkWebRequestMethodUnacceptableException;
 
 class ArkWebController
 {
@@ -67,7 +70,7 @@ class ArkWebController
      * @param string|array $name
      * @param mixed $default
      * @param null|string $regex
-     * @param null|Exception $error
+     * @param null|LookUpTargetException $error
      * @return mixed
      * @since 1.1 method added
      */
@@ -119,7 +122,8 @@ class ArkWebController
      * @param string $name
      * @param callable|string|null $checker An anonymous function `f(value,name)` or a regular expression, else would not check any more
      * @return mixed
-     * @throws Exception
+     * @throws RequestFieldInvalidatedError
+     * @throws RequestedFieldMissingError
      * @since 2.6
      */
     protected function _readIndispensableRequest($name, $checker)
@@ -140,13 +144,14 @@ class ArkWebController
 
     /**
      * @param string[] $expectedMethods
-     * @throws Exception
+     * @throws ArkWebRequestMethodUnacceptableException
+     * @since 3.4.4 throw specified exception
      * @since 3.1.7
      */
-    protected function _assertMetExpectedMethods($expectedMethods)
+    protected function _assertMetExpectedMethods(array $expectedMethods)
     {
         if (!in_array($this->_getInputHandler()->getRequestMethod(), $expectedMethods)) {
-            throw new Exception("Access with unexpected method", 405);
+            throw new ArkWebRequestMethodUnacceptableException("Access with unexpected method", 405);
         }
     }
 

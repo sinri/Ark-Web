@@ -359,7 +359,7 @@ class ArkRouter
     public function getListOfRouteRules()
     {
         $rulePatternList = [];
-        foreach ($this->rules as $index => $rule) {
+        foreach ($this->rules as $rule) {
             $rulePatternList[] = $rule->getRulePattern();
         }
         return $rulePatternList;
@@ -463,7 +463,7 @@ class ArkRouter
                     } else {
                         //FILE
                         $list = explode('.', $entry);
-                        $name = isset($list[0]) ? $list[0] : '';
+                        $name = $list[0] ?? '';
                         if (
                             $this->defaultMethodName
                             && method_exists($controllerNamespaceBase . $name, $this->defaultMethodName)

@@ -379,16 +379,16 @@
         },
         {
             "name": "sinri/ark-core",
-            "version": "2.7.10",
+            "version": "2.7.12",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sinri/Ark-Core.git",
-                "reference": "7ec440bcda5db97cdcd7ec0048453da84976187c"
+                "reference": "87bea4d2572a05b0b5bf120227116df56a63d26d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sinri/Ark-Core/zipball/7ec440bcda5db97cdcd7ec0048453da84976187c",
-                "reference": "7ec440bcda5db97cdcd7ec0048453da84976187c",
+                "url": "https://api.github.com/repos/sinri/Ark-Core/zipball/87bea4d2572a05b0b5bf120227116df56a63d26d",
+                "reference": "87bea4d2572a05b0b5bf120227116df56a63d26d",
                 "shasum": "",
                 "mirrors": [
                     {
@@ -423,9 +423,9 @@
             "description": "The core components of Ark 2",
             "support": {
                 "issues": "https://github.com/sinri/Ark-Core/issues",
-                "source": "https://github.com/sinri/Ark-Core/tree/2.7.10"
+                "source": "https://github.com/sinri/Ark-Core/tree/2.7.12"
             },
-            "time": "2021-04-07T09:48:31+00:00"
+            "time": "2021-04-11T05:36:41+00:00"
         }
     ],
     "packages-dev": [

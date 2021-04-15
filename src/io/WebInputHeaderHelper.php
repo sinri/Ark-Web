@@ -32,7 +32,7 @@ class WebInputHeaderHelper
     }
 
     /**
-     * @return array|false
+     * @return array
      */
     public function getHeaders()
     {

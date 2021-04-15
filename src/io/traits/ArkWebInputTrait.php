@@ -196,8 +196,7 @@ trait ArkWebInputTrait
     {
         $method = $this->readServer('REQUEST_METHOD');
         if ($method !== null) {
-            $method = strtoupper($method);
-            return $method;
+            return strtoupper($method);
         }
         return ArkHelper::isCLI() ? ArkWebInput::METHOD_CLI : php_sapi_name();
     }

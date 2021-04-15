@@ -305,8 +305,8 @@ class ArkWebService
 
         $fullPathString = $this->fetchControllerPathString();
         $tmp = explode('?', $fullPathString);
-        $pathString = isset($tmp[0]) ? $tmp[0] : '';
-        $pattern = '/^\/([^\?]*)(\?|$)/';
+        $pathString = $tmp[0] ?? '';
+        $pattern = '/^\/([^?]*)(\?|$)/';
         $r = preg_match($pattern, $pathString, $matches);
         if (!$r) {
             // https://github.com/sinri/enoch/issues/1

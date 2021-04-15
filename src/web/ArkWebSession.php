@@ -91,13 +91,13 @@ class ArkWebSession implements SessionHandlerInterface
     /**
      * Re-initialize existing session, or creates a new one.
      * Called when a session starts or when session_start() is invoked.
-     * @param string $save_path <- $savePath
+     * @param string $path <- $savePath
      * @param string $name <- $sessionName
      * @return boolean
      */
-    public function open($save_path, $name)
+    public function open($path, $name)
     {
-        $this->savePath = $save_path;
+        $this->savePath = $path;
         if (!is_dir($this->savePath)) {
             mkdir($this->savePath);
         }
@@ -120,12 +120,12 @@ class ArkWebSession implements SessionHandlerInterface
      * Reads the session data from the session storage, and returns the results.
      * Called right after the session starts or when session_start() is called.
      * Please note that before this method is called SessionHandlerInterface::open() is invoked.
-     * @param string $session_id <- $id
+     * @param string $id <- $id
      * @return string
      */
-    public function read($session_id)
+    public function read($id)
     {
-        return (string)@file_get_contents("{$this->savePath}/sess_{$session_id}");
+        return (string)@file_get_contents("{$this->savePath}/sess_{$id}");
     }
 
     /**
@@ -133,25 +133,25 @@ class ArkWebSession implements SessionHandlerInterface
      * Called by session_write_close(), when session_register_shutdown() fails,
      * or during a normal shutdown.
      * Note: SessionHandlerInterface::close() is called immediately after this function.
-     * @param string $session_id <- $id
-     * @param string $session_data <- $data
+     * @param string $id <- $id
+     * @param string $data <- $data
      * @return bool
      */
-    public function write($session_id, $session_data)
+    public function write($id, $data)
     {
-        return file_put_contents("{$this->savePath}/sess_{$session_id}", $session_data) === false ? false : true;
+        return !(file_put_contents("{$this->savePath}/sess_{$id}", $data) === false);
     }
 
     /**
      * Destroys a session.
      * Called by session_regenerate_id() (with $destroy = TRUE),
      * session_destroy() and when session_decode() fails.
-     * @param string $session_id <- $id
+     * @param string $id <- $id
      * @return boolean
      */
-    public function destroy($session_id)
+    public function destroy($id)
     {
-        $file = "{$this->savePath}/sess_{$session_id}";
+        $file = "{$this->savePath}/sess_{$id}";
         if (file_exists($file)) {
             unlink($file);
         }
@@ -163,13 +163,13 @@ class ArkWebSession implements SessionHandlerInterface
      * Cleans up expired sessions.
      * Called by session_start(), based on session.gc_divisor,
      * session.gc_probability and session.gc_maxlifetime settings.
-     * @param int $maxlifetime
+     * @param int $max_lifetime
      * @return boolean
      */
-    public function gc($maxlifetime)
+    public function gc($max_lifetime)
     {
         foreach (glob("{$this->savePath}/sess_*") as $file) {
-            if (filemtime($file) + $maxlifetime < time() && file_exists($file)) {
+            if (filemtime($file) + $max_lifetime < time() && file_exists($file)) {
                 unlink($file);
             }
         }
