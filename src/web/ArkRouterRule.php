@@ -323,9 +323,16 @@ abstract class ArkRouterRule
     }
 
     /**
-     * @param $callable
-     * @param $params
+     * The parameter callable could be:
+     * - (anonymous) function
+     * - [class_name, method_name] -> (new class_name())->method_name
+     * - [class_instance, method_name] -> class_instance->method_name @param string[]|callable $callable
+     * @param array $params
      * @throws GivenCallbackIsNotCallableException
+     * @since 3.4.5
+     *
+     * i.e. Static Methods are not supported here.
+     *
      */
     protected static function executeWithParameters($callable, $params)
     {
@@ -333,10 +340,11 @@ abstract class ArkRouterRule
             if (count($callable) !== 2) {
                 throw new GivenCallbackIsNotCallableException($callable, (ArkHelper::isCLI() ? -1 : 500));
             }
-            $class_instance_name = $callable[0];
-            $class_instance = new $class_instance_name();
-
-            $callable[0] = $class_instance;
+            if (is_string($callable[0])) {
+                $class_instance_name = $callable[0];
+                $class_instance = new $class_instance_name();
+                $callable[0] = $class_instance;
+            }
         }
         call_user_func_array($callable, $params);
     }
