@@ -125,8 +125,9 @@ class ArkWebController
      * @throws RequestFieldInvalidatedError
      * @throws RequestedFieldMissingError
      * @since 2.6
+     * @since 3.4.6 parameter `checker` is default as `null`
      */
-    protected function _readIndispensableRequest($name, $checker)
+    protected function _readIndispensableRequest($name, $checker = null)
     {
         return ArkWebInput::getSharedInstance()
             ->readIndispensableRequest($name, $checker);
