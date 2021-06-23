@@ -102,11 +102,16 @@ trait ArkWebOutputTrait
      * @param mixed $data
      * @param int $options @since 3.2.2
      * @param int $depth @since 3.2.2
+     * @param mixed $debugInfo @since 3.4.7
      * Exception thrown @since 3.2.2 and could be handled @since 3.4.0
      */
-    public function jsonForAjax($code = ArkWebOutput::AJAX_JSON_CODE_OK, $data = '', $options = 0, $depth = 512)
+    public function jsonForAjax($code = ArkWebOutput::AJAX_JSON_CODE_OK, $data = '', $options = 0, $depth = 512, $debugInfo = null)
     {
-        $this->json(["code" => $code, "data" => $data], $options, $depth);
+        $x = ["code" => $code, "data" => $data];
+        if ($debugInfo !== null) {
+            $x['debug_info'] = $debugInfo;
+        }
+        $this->json($x, $options, $depth);
     }
 
     /**

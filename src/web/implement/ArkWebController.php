@@ -172,25 +172,27 @@ class ArkWebController
     /**
      * @param mixed $data
      * @param int $httpCode
+     * @param mixed $debugInfo @since 3.4.7
      */
-    protected function _sayOK($data = "", $httpCode = 200)
+    protected function _sayOK($data = "", $httpCode = 200, $debugInfo = null)
     {
         ArkWebOutput::getSharedInstance()
             ->sendHTTPCode($httpCode)
             ->setContentTypeHeader(ArkWebOutput::CONTENT_TYPE_JSON)
-            ->jsonForAjax(ArkWebOutput::AJAX_JSON_CODE_OK, $data);
+            ->jsonForAjax(ArkWebOutput::AJAX_JSON_CODE_OK, $data, 0, 512, $debugInfo);
     }
 
     /**
      * @param mixed $error
      * @param int $httpCode
+     * @param mixed $debugInfo @since 3.4.7
      */
-    protected function _sayFail($error = "", $httpCode = 200)
+    protected function _sayFail($error = "", $httpCode = 200, $debugInfo = null)
     {
         ArkWebOutput::getSharedInstance()
             ->sendHTTPCode($httpCode)
             ->setContentTypeHeader(ArkWebOutput::CONTENT_TYPE_JSON)
-            ->jsonForAjax(ArkWebOutput::AJAX_JSON_CODE_FAIL, $error);
+            ->jsonForAjax(ArkWebOutput::AJAX_JSON_CODE_FAIL, $error, 0, 512, $debugInfo);
     }
 
     /**
