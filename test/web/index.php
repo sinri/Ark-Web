@@ -10,14 +10,14 @@ use Psr\Log\LogLevel;
 use sinri\ark\core\ArkLogger;
 use sinri\ark\io\ArkWebInput;
 use sinri\ark\io\ArkWebOutput;
+use sinri\ark\web\ArkWebService;
+use sinri\ark\web\implement\ArkRouteErrorHandlerAsCallback;
+use sinri\ark\web\implement\ArkRouterFreeTailRule;
 use sinri\ark\web\test\web\controller\Foo;
 use sinri\ark\web\test\web\controller\FreeTailController;
 use sinri\ark\web\test\web\controller\PureAutoRestFul\JustSingleController;
 use sinri\ark\web\test\web\filter\AnotherFilter;
 use sinri\ark\web\test\web\filter\TestFilter;
-use sinri\ark\web\ArkWebService;
-use sinri\ark\web\implement\ArkRouteErrorHandlerAsCallback;
-use sinri\ark\web\implement\ArkRouterFreeTailRule;
 
 require_once __DIR__ . '/../../vendor/autoload.php';
 
@@ -41,16 +41,16 @@ $router->setErrorHandler(new class extends ArkRouteErrorHandlerAsCallback
 {
 
     /**
-     * @param mixed $errorMessage
+     * @param mixed $error
      * @param int $httpCode
      */
-    public function requestErrorCallback($errorMessage, $httpCode)
+    public function requestErrorCallback($error, $httpCode)
     {
         //Ark()->webOutput()
         ArkWebOutput::getSharedInstance()
             ->sendHTTPCode($httpCode)
             ->setContentTypeHeader('application/json')
-            ->json(['message' => $errorMessage, 'code' => $httpCode]);
+            ->json(['message' => $error, 'code' => $httpCode]);
     }
 });
 

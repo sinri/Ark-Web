@@ -269,13 +269,7 @@ class ArkWebService
             $code = 200;
             $route->execute($this->currentRequestPath, $this->sharedData, $code);
         } catch (Exception $exception) {
-            $this->router->handleRouteError(
-                [
-                    'exception_code' => $exception->getCode(),
-                    'exception_message' => $exception->getMessage(),
-                ],
-                $exception->getCode()
-            );
+            $this->router->handleRouteError($exception, $exception->getCode());
             if ($this->debug) {
                 echo "<pre>" . PHP_EOL . print_r($exception, true) . "</pre>" . PHP_EOL;
             }

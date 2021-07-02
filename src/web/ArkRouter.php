@@ -9,6 +9,7 @@
 namespace sinri\ark\web;
 
 
+use Exception;
 use Psr\Log\LogLevel;
 use ReflectionClass;
 use ReflectionException;
@@ -109,15 +110,16 @@ class ArkRouter
     }
 
     /**
-     * @param array $errorData
+     * @param Exception $error
      * @param int $httpCode @since 1.2.8
+     * @since 3.4.8 $errorData renamed to $error, and its type might be Exception now
      */
-    public function handleRouteError($errorData = [], $httpCode = 404)
+    public function handleRouteError($error, $httpCode = 404)
     {
         if (!$this->errorHandler) {
             $this->errorHandler = new ArkRouteErrorHandlerAsJson();
         }
-        $this->errorHandler->execute($errorData, $httpCode);
+        $this->errorHandler->execute($error, $httpCode);
     }
 
     /**
@@ -314,12 +316,12 @@ class ArkRouter
     public function multiMethods($methods, $path, $callback, $filters = [], $hasFreeTail = false)
     {
         //foreach ($methods as $method) {
-            if ($hasFreeTail) {
-                $route_rule = new ArkRouterFreeTailRule($methods, $path, $callback, $filters);
-            } else {
-                $route_rule = new ArkRouterRestfulRule($methods, $path, $callback, $filters);
-            }
-            $this->registerRouteRule($route_rule);
+        if ($hasFreeTail) {
+            $route_rule = new ArkRouterFreeTailRule($methods, $path, $callback, $filters);
+        } else {
+            $route_rule = new ArkRouterRestfulRule($methods, $path, $callback, $filters);
+        }
+        $this->registerRouteRule($route_rule);
         //}
         return $this;
     }
