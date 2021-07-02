@@ -41,16 +41,16 @@ $router->setErrorHandler(new class extends ArkRouteErrorHandlerAsCallback
 {
 
     /**
-     * @param mixed $error
-     * @param int $httpCode
+     * @param Exception $error
+     * @param int $http_code
      */
-    public function requestErrorCallback($error, $httpCode)
+    public function execute($error, $http_code = 404)
     {
         //Ark()->webOutput()
         ArkWebOutput::getSharedInstance()
-            ->sendHTTPCode($httpCode)
+            ->sendHTTPCode($http_code)
             ->setContentTypeHeader('application/json')
-            ->json(['message' => $error, 'code' => $httpCode]);
+            ->json(['message' => $error, 'code' => $http_code]);
     }
 });
 

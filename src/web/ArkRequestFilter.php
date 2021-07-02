@@ -25,7 +25,7 @@ abstract class ArkRequestFilter
                 if (!is_a($class_name, self::class, true)) {
                     throw new NotArkRequestFilterInstanceException($class_name);
                 }
-                if (class_exists($class_name)) {
+                if (class_exists($class_name) && is_a($class_name, self::class, true)) {
                     return new $class_name();
                 } else {
                     return self::generateFilter(true, 'Required a filter not existed.', 500);

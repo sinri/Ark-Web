@@ -35,7 +35,7 @@ class ArkRouteErrorHandlerAsPage implements ArkRouteErrorHandlerInterface
     }
 
     /**
-     * @param array|Exception $error
+     * @param Exception $error
      * @param int $http_code
      */
     public function execute($error, $http_code = 404)
@@ -45,12 +45,7 @@ class ArkRouteErrorHandlerAsPage implements ArkRouteErrorHandlerInterface
             if (!is_string($templateFile) || !file_exists($templateFile)) {
                 throw new TemplateFileNotFoundError($templateFile);
             }
-            $parameters = [];
-            if (is_array($error)) {
-                $parameters = $error;
-            } elseif (is_a($error, Exception::class)) {
-                $parameters['exception'] = $error;
-            }
+            $parameters['exception'] = $error;
             ArkWebOutput::getSharedInstance()
                 ->sendHTTPCode($http_code)
                 ->displayPage($templateFile, $parameters);
