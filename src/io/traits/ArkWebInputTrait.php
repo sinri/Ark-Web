@@ -79,7 +79,7 @@ trait ArkWebInputTrait
      * When value is null:
      *  throw RequestedFieldMissingException
      * When checker is:
-     *  Callable: throw RequestFieldInvalidatedError when the checker return false with value;
+     *  Callable: throw RequestFieldInvalidatedError when the checker (`f(value,name)`) return false with value;
      *  Regex String (such as `/^\d+$/`): throw RequestFieldInvalidatedError when the value does not match it;
      *  Null: throw RequestFieldInvalidatedError when the value is an empty string;
      *  Else: not check anything.
@@ -92,7 +92,7 @@ trait ArkWebInputTrait
      * @since 2.6
      * @since 2.8.1 add a secondary parameter to checker when it is a callable function
      */
-    public function readIndispensableRequest($name, $checker = null)
+    public function readIndispensableRequest(string $name, $checker = null)
     {
         $value = $this->readRequest($name);
         if ($value === null) {
@@ -204,5 +204,38 @@ trait ArkWebInputTrait
     public function readServer($name, $default = null, $regex = null)
     {
         return ArkHelper::readTarget($_SERVER, $name, $default, $regex);
+    }
+
+    // shortcut
+
+    /**
+     * @param string $fieldName
+     * @return int
+     * @throws RequestFieldInvalidatedError
+     * @throws RequestedFieldMissingError
+     * @since 3.4.9
+     */
+    public function readIntegerFromRequest(string $fieldName): int
+    {
+        $x = $this->readIndispensableRequest($fieldName, '/^\d+$/');
+        return intval($x);
+    }
+
+    /**
+     * @param string $fieldName
+     * @return float
+     * @throws RequestFieldInvalidatedError
+     * @throws RequestedFieldMissingError
+     * @since 3.4.9
+     */
+    public function readFloatFromRequest(string $fieldName): float
+    {
+        $x = $this->readIndispensableRequest(
+            $fieldName,
+            function ($value, $name) {
+                return is_numeric($value);
+            }
+        );
+        return floatval($x);
     }
 }
