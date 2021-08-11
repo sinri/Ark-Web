@@ -110,7 +110,7 @@ abstract class ArkRequestFilter
      * @param array $prefixList
      * @return bool
      */
-    public static function hasPrefixAmong($path, $prefixList = [])
+    public static function hasPrefixAmong($path, $prefixList = []): bool
     {
         foreach ($prefixList as $prefix) {
             if (0 === strpos($path, $prefix)) {

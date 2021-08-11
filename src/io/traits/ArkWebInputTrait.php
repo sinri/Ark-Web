@@ -214,10 +214,11 @@ trait ArkWebInputTrait
      * @throws RequestFieldInvalidatedError
      * @throws RequestedFieldMissingError
      * @since 3.4.9
+     * @since 3.4.10 Fix for minus number
      */
     public function readIntegerFromRequest(string $fieldName): int
     {
-        $x = $this->readIndispensableRequest($fieldName, '/^\d+$/');
+        $x = $this->readIndispensableRequest($fieldName, '/^[+-]?\d+$/');
         return intval($x);
     }
 
