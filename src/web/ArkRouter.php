@@ -329,7 +329,7 @@ class ArkRouter
     /**
      * @param string $incomingPath
      * @param string $method
-     * @return mixed|ArkRouterRule
+     * @return ArkRouterRule
      * @throws ArkRouteNoMatchedException
      */
     public function seekRoute($incomingPath, $method)

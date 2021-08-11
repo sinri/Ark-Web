@@ -10,6 +10,7 @@ use Psr\Log\LogLevel;
 use sinri\ark\core\ArkLogger;
 use sinri\ark\io\ArkWebInput;
 use sinri\ark\io\ArkWebOutput;
+use sinri\ark\web\ArkRouterRule;
 use sinri\ark\web\ArkWebService;
 use sinri\ark\web\implement\ArkRouteErrorHandlerAsCallback;
 use sinri\ark\web\implement\ArkRouterFreeTailRule;
@@ -72,7 +73,7 @@ $router->loadAllControllersInDirectoryAsCI(
 $router->get("", function () use ($logger) {
     $logger->info("Homepage Requested");
     echo "Welcome to Ark!" . PHP_EOL;
-    echo "Check static/frontend for url test cases" . PHP_EOL;
+    echo "Check static/frontend/ for url test cases" . PHP_EOL;
 });
 
 // Note: if you use http://xxxx.com/static/frontend without tail `/`
@@ -128,6 +129,19 @@ $router->get('test-another-filter', function () {
     echo __FILE__ . '@' . __LINE__ . PHP_EOL . json_encode((ArkWebService::getSharedInstance())->getSharedData()) . PHP_EOL;
 }, [AnotherFilter::class]);
 
-$web_service->handleRequest();
+//$routeRuleList=$router->getListOfRouteRules();
+//var_dump($routeRuleList);
+
+$executeClosure = function (ArkRouterRule $route) {
+    try {
+        $code = 200;
+        $route->execute($this->currentRequestPath, $this->sharedData, $code);
+    } catch (Exception $exception) {
+        echo "IN executeClosure EXCEPTION: " . $exception . PHP_EOL;
+    }
+};
+$web_service->handleRequestForWeb(
+    $executeClosure
+);
 
 // call http://localhost/phpstorm/Ark/test/web/

@@ -9,6 +9,7 @@
 namespace sinri\ark\web;
 
 
+use Closure;
 use Exception;
 use sinri\ark\core\ArkHelper;
 use sinri\ark\core\ArkLogger;
@@ -256,8 +257,20 @@ class ArkWebService
 
     /**
      * This is commonly a final call after other configurations
+     *
+     * @param Closure|null $executeClosure @since 3.4.11 Experimental Now, DO NOT USE IT IN PROD ENV
+     *
+     * Above Discuss:
+     * If we need to put the web handler inside a database transaction?
+     * let `$executeClosure` be
+     * ```
+     * function(ArkRouterRule $route,int &$code){
+     *      $code=200;
+     *      $route->execute($this->currentRequestPath, $this->sharedData, $code);
+     * }
+     * ```
      */
-    public function handleRequestForWeb()
+    public function handleRequestForWeb($executeClosure = null)
     {
         try {
             $this->dividePath($this->currentRequestPath);
@@ -266,8 +279,12 @@ class ArkWebService
                 //Ark()->webInput()->getRequestMethod()
                 ArkWebInput::getSharedInstance()->getRequestMethod()
             );
-            $code = 200;
-            $route->execute($this->currentRequestPath, $this->sharedData, $code);
+            if ($executeClosure === null) {
+                $code = 200;
+                $route->execute($this->currentRequestPath, $this->sharedData, $code);
+            } else {
+                $executeClosure->call($this, $route);
+            }
         } catch (Exception $exception) {
             $this->router->handleRouteError($exception, $exception->getCode());
             if ($this->debug) {
@@ -402,9 +419,9 @@ class ArkWebService
                     //Ark()->webOutput()
                     ArkWebOutput::getSharedInstance()
                         ->displayPage(__DIR__ . '/template/FileSystemViewerDirPageTemplate.php', [
-                        'components' => $components,
-                        'realPath' => $realPath,
-                    ]);
+                            'components' => $components,
+                            'realPath' => $realPath,
+                        ]);
                 }
             } else {
                 // show content
