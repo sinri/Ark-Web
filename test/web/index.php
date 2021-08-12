@@ -137,6 +137,7 @@ $executeClosure = function (ArkRouterRule $route) {
         $code = 200;
         $route->execute($this->currentRequestPath, $this->sharedData, $code);
     } catch (Exception $exception) {
+        echo $exception->getMessage() . PHP_EOL;
         echo "IN executeClosure EXCEPTION: " . $exception . PHP_EOL;
     }
 };
