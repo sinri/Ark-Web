@@ -18,7 +18,7 @@ class IPFormatError extends Exception
 
     public function __construct($ip = "", $code = 0, Throwable $previous = null)
     {
-        parent::__construct("IP Expression [{$ip}] is not valid.", $code, $previous);
+        parent::__construct("IP Expression [$ip] is not valid.", $code, $previous);
         $this->ip = $ip;
     }
 

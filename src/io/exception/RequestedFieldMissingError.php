@@ -4,22 +4,21 @@
 namespace sinri\ark\io\exception;
 
 
-use sinri\ark\core\ArkHelper;
-use sinri\ark\core\exception\EnsureItemException;
-use Throwable;
+use sinri\ark\web\exception\ArkWebRequestFailed;
 
 /**
  * Class RequestedFieldMissingError
  * @package sinri\ark\io\exception
- * @since 3.4.2
+ * @since 3.4.2 as a child class of EnsureItemException
+ * @since 3.5.0 as a child class of ArkWebRequestFailed
  */
-class RequestedFieldMissingError extends EnsureItemException
+class RequestedFieldMissingError extends ArkWebRequestFailed
 {
     protected $targetFieldName;
 
-    public function __construct(string $field, Throwable $previous = null)
+    public function __construct(string $field, int $httpStatusCode = 200)
     {
-        parent::__construct("Requested field [{$field}] is missing.", ArkHelper::READ_TARGET_FIELD_NOT_FOUND, $previous);
+        parent::__construct("Requested field [$field] is missing.", ['field' => $field], $httpStatusCode);
         $this->targetFieldName = $field;
     }
 

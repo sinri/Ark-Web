@@ -8,10 +8,11 @@
 
 namespace sinri\ark\web;
 
-use sinri\ark\core\ArkHelper;
 use sinri\ark\core\ArkLogger;
 use sinri\ark\io\ArkWebInput;
 use sinri\ark\web\exception\ArkFilterRefuseRequestException;
+use sinri\ark\web\exception\ArkWebRequestFailed;
+use sinri\ark\web\exception\ArkWebRequestMethodUnacceptableException;
 use sinri\ark\web\exception\GivenCallbackIsNotCallableException;
 
 /**
@@ -242,7 +243,7 @@ abstract class ArkRouterRule
         } elseif (is_callable($this->callback)) {
             $callbackString = 'anonymous function';
         }
-        return $this->getType() . " [{$methodsExpression}] {$this->path} : {$filterTitles} : " . $callbackString;
+        return $this->getType() . " [$methodsExpression] $this->path : $filterTitles : " . $callbackString;
     }
 
 
@@ -276,6 +277,8 @@ abstract class ArkRouterRule
      * @param int $responseCode @since 1.1 this became reference
      * @throws ArkFilterRefuseRequestException
      * @throws GivenCallbackIsNotCallableException
+     * @throws ArkWebRequestFailed since 3.5.0
+     * @throws ArkWebRequestMethodUnacceptableException since 3.5.0
      */
     public function execute($path_string, &$preparedData = [], &$responseCode = 200)
     {
@@ -329,6 +332,7 @@ abstract class ArkRouterRule
      * - [class_instance, method_name] -> class_instance->method_name @param string[]|callable $callable
      * @param array $params
      * @throws GivenCallbackIsNotCallableException
+     * @throws ArkWebRequestFailed @since 3.4.12
      * @since 3.4.5
      *
      * i.e. Static Methods are not supported here.
@@ -338,7 +342,7 @@ abstract class ArkRouterRule
     {
         if (is_array($callable)) {
             if (count($callable) !== 2) {
-                throw new GivenCallbackIsNotCallableException($callable, (ArkHelper::isCLI() ? -1 : 500));
+                throw new GivenCallbackIsNotCallableException($callable);
             }
             if (is_string($callable[0])) {
                 $class_instance_name = $callable[0];

@@ -5,8 +5,10 @@ namespace sinri\ark\web\implement;
 
 
 use Exception;
+use sinri\ark\core\exception\ArkNestedException;
 use sinri\ark\io\ArkWebOutput;
 use sinri\ark\web\ArkRouteErrorHandlerInterface;
+use sinri\ark\web\exception\ArkWebRequestFailed;
 
 class ArkRouteErrorHandlerAsJson implements ArkRouteErrorHandlerInterface
 {
@@ -15,9 +17,17 @@ class ArkRouteErrorHandlerAsJson implements ArkRouteErrorHandlerInterface
      * @param int $http_code
      * Do not throw Exception from inside!
      */
-    public function execute($error, $http_code = 404)
+    public function execute(Exception $error, int $http_code)
     {
-        $data = ['exception_code' => $error->getCode(), 'exception_message' => $error->getMessage()];
+        $data = [
+            'error' => $error->getMessage()
+        ];
+        if (is_a($error, ArkWebRequestFailed::class)) {
+            $data['detail'] = $error->getDetail();
+        }
+        if (is_a($error, ArkNestedException::class)) {
+            $data['nested'] = $error->getNestedMessage();
+        }
         ArkWebOutput::getSharedInstance()
             ->sendHTTPCode($http_code)
             ->setContentTypeHeader(ArkWebOutput::CONTENT_TYPE_JSON)

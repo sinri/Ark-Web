@@ -49,11 +49,11 @@
         $fileSize = number_format($fileSize);
 
         echo "<tr>"
-            . "<td>" . "<a href='./{$item}'>{$item}</a> " . "</td>"
-            . "<td>{$fileSize} bytes</td>"
-            . "<td>{$lastCreateTime}</td>"
-            . "<td>{$lastModificationTime}</td>"
-            . "<td>{$lastAccessTime}</td>"
+            . "<td>" . "<a href='./$item'>$item</a> " . "</td>"
+            . "<td>$fileSize bytes</td>"
+            . "<td>$lastCreateTime</td>"
+            . "<td>$lastModificationTime</td>"
+            . "<td>$lastAccessTime</td>"
             . "</tr>" . PHP_EOL;
     }
     closedir($dir);

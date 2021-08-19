@@ -10,7 +10,6 @@ namespace sinri\ark\web\test\web\controller;
 
 
 use Exception;
-use sinri\ark\core\ArkHelper;
 use sinri\ark\io\ArkWebInput;
 use sinri\ark\web\implement\ArkWebController;
 
@@ -22,7 +21,7 @@ class Foo extends ArkWebController
             'a' => $a,
             'b' => $b,
             'token' => ArkWebInput::getSharedInstance()->readRequest('token'),
-            'time' => ArkHelper::readTarget($this->filterGeneratedData, ['request_time'], 'unknown'),
+            'time' => $this->_readFilterGeneratedData(['request_time'], 'unknown'),
         ]);
     }
 

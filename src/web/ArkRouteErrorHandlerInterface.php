@@ -14,7 +14,8 @@ interface ArkRouteErrorHandlerInterface
      * @return void
      * Do not throw Exception from inside!
      * @since 3.4.8 $errorData renamed to $error and its type might be Exception
+     * @since 3.5.0 changed definition
      */
-    public function execute($error, $http_code = 404);
+    public function execute(Exception $error, int $http_code);
 
 }

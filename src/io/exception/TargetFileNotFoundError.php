@@ -21,7 +21,7 @@ class TargetFileNotFoundError extends Exception
 
     public function __construct(string $file, Throwable $previous = null)
     {
-        parent::__construct("File [{$file}] is not there", 404, $previous);
+        parent::__construct("File [$file] is not there", 404, $previous);
         $this->targetFile = $file;
     }
 

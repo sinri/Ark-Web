@@ -9,10 +9,8 @@
 use Psr\Log\LogLevel;
 use sinri\ark\core\ArkLogger;
 use sinri\ark\io\ArkWebInput;
-use sinri\ark\io\ArkWebOutput;
-use sinri\ark\web\ArkRouterRule;
 use sinri\ark\web\ArkWebService;
-use sinri\ark\web\implement\ArkRouteErrorHandlerAsCallback;
+use sinri\ark\web\implement\ArkRouteErrorHandlerAsJson;
 use sinri\ark\web\implement\ArkRouterFreeTailRule;
 use sinri\ark\web\test\web\controller\Foo;
 use sinri\ark\web\test\web\controller\FreeTailController;
@@ -38,25 +36,26 @@ $router = $web_service->getRouter();
 $router->setDebug(true);
 $router->setLogger($logger);
 
-$router->setErrorHandler(new class extends ArkRouteErrorHandlerAsCallback
-{
-
-    /**
-     * @param Exception $error
-     * @param int $http_code
-     */
-    public function execute($error, $http_code = 404)
-    {
-        //Ark()->webOutput()
-        ArkWebOutput::getSharedInstance()
-            ->sendHTTPCode($http_code)
-            ->setContentTypeHeader('application/json')
-            ->json(['message' => $error, 'code' => $http_code]);
-    }
-});
+$router->setErrorHandler(new ArkRouteErrorHandlerAsJson());
+//$router->setErrorHandler(new class extends ArkRouteErrorHandlerAsCallback
+//{
+//
+//    /**
+//     * @param Exception $error
+//     * @param int $http_code
+//     */
+//    public function execute(Exception $error, int $http_code)
+//    {
+//        //Ark()->webOutput()
+//        ArkWebOutput::getSharedInstance()
+//            ->sendHTTPCode($http_code)
+//            ->setContentTypeHeader('application/json')
+//            ->json(['message' => $error, 'code' => $http_code]);
+//    }
+//});
 
 $router->get("getDocument/{doc_id}/page/{page_id}", function ($docId, $pageId) {
-    echo "GET DOC {$docId} PAGE {$pageId}" . PHP_EOL;
+    echo "GET DOC $docId PAGE $pageId" . PHP_EOL;
 });
 $router->loadAllControllersInDirectoryAsCI(
     __DIR__ . '/controller',
@@ -132,17 +131,6 @@ $router->get('test-another-filter', function () {
 //$routeRuleList=$router->getListOfRouteRules();
 //var_dump($routeRuleList);
 
-$executeClosure = function (ArkRouterRule $route) {
-    try {
-        $code = 200;
-        $route->execute($this->currentRequestPath, $this->sharedData, $code);
-    } catch (Exception $exception) {
-        echo $exception->getMessage() . PHP_EOL;
-        echo "IN executeClosure EXCEPTION: " . $exception . PHP_EOL;
-    }
-};
-$web_service->handleRequestForWeb(
-    $executeClosure
-);
+$web_service->handleRequestForWeb();
 
-// call http://localhost/phpstorm/Ark/test/web/
+//@see http://localhost/code/Ark-Web/test/web/static/frontend/

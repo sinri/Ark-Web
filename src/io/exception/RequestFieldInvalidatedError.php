@@ -4,23 +4,22 @@
 namespace sinri\ark\io\exception;
 
 
-use sinri\ark\core\ArkHelper;
-use sinri\ark\core\exception\EnsureItemException;
-use Throwable;
+use sinri\ark\web\exception\ArkWebRequestFailed;
 
 /**
  * Class RequestFieldInvalidatedError
  * @package sinri\ark\io\exception
- * @since 3.4.2
+ * @since 3.4.2 as a child class of EnsureItemException
+ * @since 3.5.0 as a child class of ArkWebRequestFailed
  */
-class RequestFieldInvalidatedError extends EnsureItemException
+class RequestFieldInvalidatedError extends ArkWebRequestFailed
 {
     protected $targetFieldName;
     protected $valueProvided;
 
-    public function __construct(string $field, $value = null, Throwable $previous = null)
+    public function __construct(string $field, $value = null, int $httpStatusCode = 200)
     {
-        parent::__construct("Request field [{$field}] could not be validated.", ArkHelper::READ_TARGET_REGEX_NOT_MATCH, $previous);
+        parent::__construct("Request field [$field] could not be validated.", ['field' => $field, 'value' => $value], $httpStatusCode);
         $this->targetFieldName = $field;
         $this->valueProvided = $value;
     }

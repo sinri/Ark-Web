@@ -114,12 +114,16 @@ class ArkRouter
      * @param int $httpCode @since 1.2.8
      * @since 3.4.8 $errorData renamed to $error, and its type might be Exception now
      */
-    public function handleRouteError($error, $httpCode = 404)
+    public function handleRouteError(Exception $error, int $httpCode)
     {
         if (!$this->errorHandler) {
             $this->errorHandler = new ArkRouteErrorHandlerAsJson();
         }
         $this->errorHandler->execute($error, $httpCode);
+        // @since 3.5.0 moved to router from service
+        if ($this->debug) {
+            echo "<pre>" . PHP_EOL . print_r($error, true) . "</pre>" . PHP_EOL;
+        }
     }
 
     /**

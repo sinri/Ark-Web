@@ -5,9 +5,11 @@ namespace sinri\ark\web\implement;
 
 
 use Exception;
+use sinri\ark\core\exception\ArkNestedException;
 use sinri\ark\io\ArkWebOutput;
 use sinri\ark\io\exception\TemplateFileNotFoundError;
 use sinri\ark\web\ArkRouteErrorHandlerInterface;
+use sinri\ark\web\exception\ArkWebRequestFailed;
 
 class ArkRouteErrorHandlerAsPage implements ArkRouteErrorHandlerInterface
 {
@@ -38,7 +40,7 @@ class ArkRouteErrorHandlerAsPage implements ArkRouteErrorHandlerInterface
      * @param Exception $error
      * @param int $http_code
      */
-    public function execute($error, $http_code = 404)
+    public function execute(Exception $error, int $http_code)
     {
         try {
             $templateFile = $this->getTemplateFile();
@@ -46,6 +48,12 @@ class ArkRouteErrorHandlerAsPage implements ArkRouteErrorHandlerInterface
                 throw new TemplateFileNotFoundError($templateFile);
             }
             $parameters['exception'] = $error;
+            if (is_a($error, ArkWebRequestFailed::class)) {
+                $parameters['detail'] = $error->getDetail();
+            }
+            if (is_a($error, ArkNestedException::class)) {
+                $parameters['nested'] = $error->getNestedMessage();
+            }
             ArkWebOutput::getSharedInstance()
                 ->sendHTTPCode($http_code)
                 ->displayPage($templateFile, $parameters);

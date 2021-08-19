@@ -22,6 +22,7 @@ class ArkWebController
 {
     /**
      * @var array|null
+     * @deprecated since 3.5.x Do not use it directly, if needed, use `_readFilterGeneratedData` instead
      * It might be renamed in the future, but now it would not be changed for stability
      */
     protected $filterGeneratedData;
@@ -45,7 +46,7 @@ class ArkWebController
      */
     protected function _readFilterGeneratedData($name, $default = null, $regex = null)
     {
-        return ArkHelper::readTarget($this->filterGeneratedData, $name, $default, $regex);
+        return ArkHelper::readTarget(ArkWebService::getSharedInstance()->getSharedData(), $name, $default, $regex);
     }
 
     /**
@@ -54,7 +55,7 @@ class ArkWebController
      */
     protected function _getInputHandler()
     {
-        return ArkWebInput::getSharedInstance();//Ark()->webInput();
+        return ArkWebInput::getSharedInstance();
     }
 
     /**
@@ -63,7 +64,7 @@ class ArkWebController
      */
     protected function _getOutputHandler()
     {
-        return ArkWebOutput::getSharedInstance();//Ark()->webOutput();
+        return ArkWebOutput::getSharedInstance();
     }
 
     /**
@@ -186,6 +187,7 @@ class ArkWebController
      * @param mixed $error
      * @param int $httpCode
      * @param mixed $debugInfo @since 3.4.7
+     * @deprecated since 3.5.0 It is now recommended to use `throw new ArkWebRequestFailed` instead
      */
     protected function _sayFail($error = "", $httpCode = 200, $debugInfo = null)
     {

@@ -48,7 +48,7 @@ foreach ($testCases as $testCaseName => $testCase) {
     $method = $testCase['method'];
     $url = $testCase['url'];
 
-    echo "Test for {$testCaseName} : " . $method . ' ' . $url . PHP_EOL;
+    echo "Test for $testCaseName : " . $method . ' ' . $url . PHP_EOL;
     $result = $curl->prepareToRequestURL($method, $baseUrl . $url)
         ->setCURLOption(CURLOPT_HEADER, 1)
         ->execute();

@@ -125,7 +125,7 @@ class ArkWebSession implements SessionHandlerInterface
      */
     public function read($id)
     {
-        return (string)@file_get_contents("{$this->savePath}/sess_{$id}");
+        return (string)@file_get_contents("$this->savePath/sess_$id");
     }
 
     /**
@@ -139,7 +139,7 @@ class ArkWebSession implements SessionHandlerInterface
      */
     public function write($id, $data)
     {
-        return !(file_put_contents("{$this->savePath}/sess_{$id}", $data) === false);
+        return !(file_put_contents("$this->savePath/sess_$id", $data) === false);
     }
 
     /**
@@ -151,7 +151,7 @@ class ArkWebSession implements SessionHandlerInterface
      */
     public function destroy($id)
     {
-        $file = "{$this->savePath}/sess_{$id}";
+        $file = "$this->savePath/sess_$id";
         if (file_exists($file)) {
             unlink($file);
         }
@@ -168,7 +168,7 @@ class ArkWebSession implements SessionHandlerInterface
      */
     public function gc($max_lifetime)
     {
-        foreach (glob("{$this->savePath}/sess_*") as $file) {
+        foreach (glob("$this->savePath/sess_*") as $file) {
             if (filemtime($file) + $max_lifetime < time() && file_exists($file)) {
                 unlink($file);
             }

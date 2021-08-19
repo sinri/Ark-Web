@@ -5,6 +5,7 @@ namespace sinri\ark\web\test\web\controller\PureAutoRestFul;
 
 
 use sinri\ark\io\ArkWebInput;
+use sinri\ark\io\exception\ArkValidatorException;
 use sinri\ark\io\validator\ArkWebInputValidator;
 use sinri\ark\io\validator\implement\ValidateRuleForArray;
 use sinri\ark\io\validator\implement\ValidateRuleForFloat;
@@ -12,6 +13,7 @@ use sinri\ark\io\validator\implement\ValidateRuleForInteger;
 use sinri\ark\io\validator\implement\ValidateRuleForMatrix;
 use sinri\ark\io\validator\implement\ValidateRuleForNumericString;
 use sinri\ark\io\validator\implement\ValidateRuleForStringRegex;
+use sinri\ark\web\exception\ArkWebRequestFailed;
 use sinri\ark\web\implement\ArkWebController;
 use sinri\ark\web\test\web\entity\ValidatorTestAEntity;
 
@@ -36,7 +38,11 @@ class TestValidatorController extends ArkWebController
                 (new ValidateRuleForFloat(["d3"]))->markIndispensable()->setInvalidFeedback("d3 wrong"),
             ]
         );
-        $e = ValidatorTestAEntity::validateWebRequest($validator);
+        try {
+            $e = ValidatorTestAEntity::validateWebRequest($validator);
+        } catch (ArkValidatorException $e) {
+            throw new ArkWebRequestFailed($e->getMessage());
+        }
         $this->_sayOK($e->getInputData());
     }
 
@@ -57,7 +63,11 @@ class TestValidatorController extends ArkWebController
         );
 
         $matrix = ArkWebInput::getSharedInstance()->getRawPostBodyParsedAsJson();
-        $validator->formatArray($matrix);
+        try {
+            $validator->formatArray($matrix);
+        } catch (ArkValidatorException $e) {
+            throw new ArkWebRequestFailed($e->getMessage());
+        }
         $this->_sayOK($matrix);
     }
 
@@ -72,7 +82,11 @@ class TestValidatorController extends ArkWebController
 //                    ->setInvalidFeedback("TEST C Array ITEM SHOULD BE INT!")
             )
         );
-        $e = ValidatorTestAEntity::validateWebRequest($validator);
+        try {
+            $e = ValidatorTestAEntity::validateWebRequest($validator);
+        } catch (ArkValidatorException $e) {
+            throw new ArkWebRequestFailed($e->getMessage());
+        }
         $this->_sayOK($e->getInputData());
     }
 }

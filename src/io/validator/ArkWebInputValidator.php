@@ -42,29 +42,41 @@ class ArkWebInputValidator
     }
 
     /**
-     * @param ArkWebInputValidatedEntity $validated
+     * @param ArkWebInputValidatedEntity|null $validated
+     * @return ArkWebInputValidatedEntity
      * @throws ArkValidatorException
+     * @since 3.5.0 parameter `$validated` might be omitted, and it might be automatically generated, and be returned.
      */
-    public function validateWebRequest($validated)
+    public function validateWebRequest(ArkWebInputValidatedEntity $validated = null)
     {
+        if ($validated === null) {
+            $validated = new ArkWebInputValidatedEntity();
+        }
         foreach ($this->validateRuleList as $validateRule) {
             $inputValue = ArkWebInput::getSharedInstance()->readRequest($validateRule->getFieldPath());
             $validatedValue = $validateRule->getValidatedValue($inputValue);
             $validated->write($validateRule->getFieldPath(), $validatedValue);
         }
+        return $validated;
     }
 
     /**
-     * @param ArkWebInputValidatedEntity $validated
+     * @param ArkWebInputValidatedEntity|null $validated
+     * @return ArkWebInputValidatedEntity
      * @throws ArkValidatorException
+     * @since 3.5.0 parameter `$validated` might be omitted, and it might be automatically generated, and be returned.
      */
-    public function validateWebPost($validated)
+    public function validateWebPost(ArkWebInputValidatedEntity $validated = null)
     {
+        if ($validated === null) {
+            $validated = new ArkWebInputValidatedEntity();
+        }
         foreach ($this->validateRuleList as $validateRule) {
             $inputValue = ArkWebInput::getSharedInstance()->readPost($validateRule->getFieldPath());
             $validatedValue = $validateRule->getValidatedValue($inputValue);
             $validated->write($validateRule->getFieldPath(), $validatedValue);
         }
+        return $validated;
     }
 
     /**

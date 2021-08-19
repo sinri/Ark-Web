@@ -33,7 +33,7 @@ class ValidateRuleForNumericString extends ArkWebInputValidateRule
     public function default(string $defaultValue)
     {
         $this->defaultValue = $defaultValue;
-        if (!is_numeric($defaultValue) && $defaultValue !== null) {
+        if (!is_numeric($defaultValue)) {
             throw new InvalidArgumentException("DEFAULT MUST BE A Numeric String");
         }
         return $this;

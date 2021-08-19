@@ -154,7 +154,6 @@ trait ArkWebOutputTrait
             return;
         }
         extract($params);
-        /** @noinspection PhpIncludeInspection */
         require $templateFile;
     }
 

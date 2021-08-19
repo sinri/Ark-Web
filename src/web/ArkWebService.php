@@ -9,12 +9,16 @@
 namespace sinri\ark\web;
 
 
-use Closure;
 use Exception;
 use sinri\ark\core\ArkHelper;
 use sinri\ark\core\ArkLogger;
 use sinri\ark\io\ArkWebInput;
 use sinri\ark\io\ArkWebOutput;
+use sinri\ark\web\exception\ArkFilterRefuseRequestException;
+use sinri\ark\web\exception\ArkRouteNoMatchedException;
+use sinri\ark\web\exception\ArkWebRequestFailed;
+use sinri\ark\web\exception\ArkWebRequestMethodUnacceptableException;
+use sinri\ark\web\exception\GivenCallbackIsNotCallableException;
 
 class ArkWebService
 {
@@ -257,39 +261,24 @@ class ArkWebService
 
     /**
      * This is commonly a final call after other configurations
-     *
-     * @param Closure|null $executeClosure @since 3.4.11 Experimental Now, DO NOT USE IT IN PROD ENV
-     *
-     * Above Discuss:
-     * If we need to put the web handler inside a database transaction?
-     * let `$executeClosure` be
-     * ```
-     * function(ArkRouterRule $route,int &$code){
-     *      $code=200;
-     *      $route->execute($this->currentRequestPath, $this->sharedData, $code);
-     * }
-     * ```
      */
-    public function handleRequestForWeb($executeClosure = null)
+    public function handleRequestForWeb()
     {
         try {
             $this->dividePath($this->currentRequestPath);
             $route = $this->router->seekRoute(
                 $this->currentRequestPath,
-                //Ark()->webInput()->getRequestMethod()
                 ArkWebInput::getSharedInstance()->getRequestMethod()
             );
-            if ($executeClosure === null) {
-                $code = 200;
-                $route->execute($this->currentRequestPath, $this->sharedData, $code);
-            } else {
-                $executeClosure->call($this, $route);
-            }
-        } catch (Exception $exception) {
+            $code = 200;
+            // the controller is assumed to throw ArkWebRequestFailed when error response is expected
+            $route->execute($this->currentRequestPath, $this->sharedData, $code);
+        } catch (ArkWebRequestFailed | ArkRouteNoMatchedException | GivenCallbackIsNotCallableException | ArkFilterRefuseRequestException | ArkWebRequestMethodUnacceptableException $exception) {
+            // since 3.5.0 Special exceptions would be caught for customized HTTP status code
             $this->router->handleRouteError($exception, $exception->getCode());
-            if ($this->debug) {
-                echo "<pre>" . PHP_EOL . print_r($exception, true) . "</pre>" . PHP_EOL;
-            }
+        } catch (Exception $exception) {
+            // since 3.5.0 For other `Exception`s, just respond with 500
+            $this->router->handleRouteError($exception, 500);
         } finally {
             $this->endTime = microtime(true);
             if (is_callable($this->finalHandler)) {
@@ -300,7 +289,7 @@ class ArkWebService
 
     /**
      * @param string $pathString It would be as output.
-     * @return string[] array Array of components
+     * @return string[] array of components
      */
     protected function dividePath(&$pathString = '')
     {
