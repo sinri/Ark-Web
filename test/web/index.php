@@ -9,6 +9,7 @@
 use Psr\Log\LogLevel;
 use sinri\ark\core\ArkLogger;
 use sinri\ark\io\ArkWebInput;
+use sinri\ark\web\ArkRouter;
 use sinri\ark\web\ArkWebService;
 use sinri\ark\web\implement\ArkRouteErrorHandlerAsJson;
 use sinri\ark\web\implement\ArkRouterFreeTailRule;
@@ -30,10 +31,13 @@ $logger->setGroupByPrefix(true);
 $logger->removeCurrentLogFile();
 
 $web_service = ArkWebService::getSharedInstance();//Ark()->webService();
-$web_service->setDebug(true);
+$web_service->setDebug(false);
 $web_service->setLogger($logger);
 $router = $web_service->getRouter();
-$router->setDebug(true);
+
+ArkRouter::declareRouterUseAnnotation();
+
+$router->setDebug(false);
 $router->setLogger($logger);
 
 $router->setErrorHandler(new ArkRouteErrorHandlerAsJson());
@@ -130,6 +134,8 @@ $router->get('test-another-filter', function () {
 
 //$routeRuleList=$router->getListOfRouteRules();
 //var_dump($routeRuleList);
+
+$router->loadRoutesWithAnnotationInDirectory(__DIR__ . '/controller/annotation', 'sinri\ark\web\test\web\controller\annotation\\');
 
 $web_service->handleRequestForWeb();
 

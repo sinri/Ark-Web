@@ -15,6 +15,7 @@
         "ralouphie/getallheaders": "^2.0",
         "jenssegers/agent": "^2.6",
         "ralouphie/mimey": "^1.0",
+        "doctrine/annotations": "~1.13",
         "ext-json": "*"
     },
     "require-dev": {
