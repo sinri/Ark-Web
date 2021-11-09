@@ -422,6 +422,5 @@ class ArkWebService
                 }
             }
         }, $filters, true);
-
     }
 }

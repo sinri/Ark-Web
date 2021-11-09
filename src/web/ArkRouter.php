@@ -9,13 +9,18 @@
 namespace sinri\ark\web;
 
 
+use Doctrine\Common\Annotations\AnnotationReader;
+use Doctrine\Common\Annotations\AnnotationRegistry;
 use Exception;
 use Psr\Log\LogLevel;
 use ReflectionClass;
 use ReflectionException;
+use RuntimeException;
 use sinri\ark\core\ArkLogger;
 use sinri\ark\io\ArkWebInput;
 use sinri\ark\io\ArkWebOutput;
+use sinri\ark\web\annotation\definition\ClassForRoute;
+use sinri\ark\web\annotation\definition\MethodForRoute;
 use sinri\ark\web\exception\ArkRouteNoMatchedException;
 use sinri\ark\web\implement\ArkRouteErrorHandlerAsJson;
 use sinri\ark\web\implement\ArkRouterAutoRestfulRule;
@@ -44,7 +49,12 @@ class ArkRouter
      * @var ArkRouterRule[]
      */
     protected $rules;
-
+    /**
+     * @var AnnotationReader|null
+     * @notice it is an experimental function
+     * @since 3.5.1
+     */
+    protected static $annotationReader = null;
 
     public function __construct()
     {
@@ -54,6 +64,30 @@ class ArkRouter
         $this->defaultMethodName = 'index';
         $this->errorHandler = null;
         $this->rules = [];
+    }
+
+    /**
+     * @notice it is an experimental function
+     * @since 3.5.1
+     */
+    public static function declareRouterUseAnnotation()
+    {
+        // Deprecated and will be removed in 2.0 but currently needed
+        AnnotationRegistry::registerLoader('class_exists');
+        self::$annotationReader = new AnnotationReader();
+    }
+
+    /**
+     * @return AnnotationReader
+     * @notice it is an experimental function
+     * @since 3.5.1
+     */
+    protected function getAnnotationReader(): AnnotationReader
+    {
+        if (self::$annotationReader !== null) {
+            return self::$annotationReader;
+        }
+        throw new RuntimeException("Run ArkRouter::declareRouterUseAnnotation() first!");
     }
 
     /**
@@ -544,6 +578,91 @@ class ArkRouter
             }
         } catch (ReflectionException $e) {
             // do nothing if class not exist
+        }
+        return $this;
+    }
+
+    /**
+     * @param string $directory __DIR__ . '/../controller'
+     * @param string $controllerNamespaceBase '\sinri\sample\controller\\'
+     * @return $this
+     * @throws ReflectionException
+     *
+     * ClassForRoute　と　MethodForRoute　という標記をしたコントローラークラスとその中のメソッドを自動的にルートを登録。
+     * @notice it is an experimental function
+     * @since 3.5.1
+     */
+    public function loadRoutesWithAnnotationInDirectory($directory, $controllerNamespaceBase = '')
+    {
+        /*
+         * Ensure the following
+         * // Deprecated and will be removed in 2.0 but currently needed
+         *  AnnotationRegistry::registerLoader('class_exists');
+         */
+        if (!file_exists($directory) || !is_dir($directory)) {
+            if ($this->debug) {
+                $this->logger->debug(__METHOD__ . '@' . __LINE__ . " warning: this is not a directory: " . $directory);
+            }
+        } elseif ($handle = opendir($directory)) {
+            while (false !== ($entry = readdir($handle))) {
+                if ($entry != "." && $entry != "..") {
+                    if (is_dir($directory . '/' . $entry)) {
+                        //DIR,
+                        $this->loadRoutesWithAnnotationInDirectory(
+                            $directory . '/' . $entry,
+                            $controllerNamespaceBase . $entry . '\\'
+                        );
+                    } else {
+                        //FILE
+                        $list = explode('.', $entry);
+                        $controllerClassName = $list[0] ?? '';
+
+                        $reflectionClass = new ReflectionClass($controllerNamespaceBase . $controllerClassName);
+                        $classForRoute = $this->getAnnotationReader()->getClassAnnotation($reflectionClass, ClassForRoute::class);
+
+                        $reflectionClassMethodList = $reflectionClass->getMethods();
+                        foreach ($reflectionClassMethodList as $reflectionMethod) {
+                            if (!$reflectionMethod->isPublic()) {
+                                // not public method, not for route
+                                continue;
+                            }
+                            $methodForRoute = $this->getAnnotationReader()->getMethodAnnotation($reflectionMethod, MethodForRoute::class);
+                            if ($methodForRoute !== null) {
+                                // use method level annotation if declared first
+                                $this->multiMethods(
+                                    $methodForRoute->getMethods(),
+                                    $methodForRoute->path,
+                                    [$controllerNamespaceBase . $controllerClassName, $reflectionMethod->getName()],
+                                    $methodForRoute->getFilters(),
+                                    $methodForRoute->withFreeTail
+                                );
+                                continue;
+                            }
+                            if ($classForRoute !== null) {
+                                // use class level annotation, auto generate routes for each method
+                                $min = $reflectionMethod->getNumberOfRequiredParameters();
+                                $max = $reflectionMethod->getNumberOfParameters();
+                                $pathTail = '';
+                                for ($i = 0; $i <= $max; $i++) {
+                                    if ($i >= $min) {
+                                        $this->multiMethods(
+                                            $classForRoute->getMethods(),
+                                            $classForRoute->path . '/' . $reflectionMethod->getName() . $pathTail,
+                                            [$controllerNamespaceBase . $controllerClassName, $reflectionMethod->getName()],
+                                            $classForRoute->getFilters(),
+                                            $classForRoute->withFreeTail
+                                        );
+                                    }
+                                    if ($i < $max) {
+                                        $pathTail .= '/{' . $reflectionMethod->getParameters()[$i]->getName() . '}';
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            closedir($handle);
         }
         return $this;
     }
