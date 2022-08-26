@@ -389,7 +389,7 @@ class ArkRouter
                 return $rule;
             }
         }
-        throw new ArkRouteNoMatchedException($incomingPath, $method);
+        throw new ArkRouteNoMatchedException($method, $incomingPath);
     }
 
     /**
