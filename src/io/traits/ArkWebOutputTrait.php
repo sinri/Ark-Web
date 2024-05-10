@@ -30,7 +30,7 @@ trait ArkWebOutputTrait
      * @return callable
      * @since 3.4.0
      */
-    public function getDisplayPageTemplateMissingHandler()
+    public function getDisplayPageTemplateMissingHandler(): callable
     {
         return $this->displayPageTemplateMissingHandler;
     }
@@ -40,7 +40,7 @@ trait ArkWebOutputTrait
      * @return ArkWebOutputTrait
      * @since 3.4.0
      */
-    public function setDisplayPageTemplateMissingHandler(callable $displayPageTemplateMissingHandler)
+    public function setDisplayPageTemplateMissingHandler(callable $displayPageTemplateMissingHandler): static
     {
         $this->displayPageTemplateMissingHandler = $displayPageTemplateMissingHandler;
         return $this;
@@ -50,7 +50,7 @@ trait ArkWebOutputTrait
      * @return callable
      * @since 3.4.0
      */
-    public function getJsonEncodeErrorHandler()
+    public function getJsonEncodeErrorHandler(): callable
     {
         return $this->jsonEncodeErrorHandler;
     }
@@ -60,7 +60,7 @@ trait ArkWebOutputTrait
      * @return ArkWebOutputTrait
      * @since 3.4.0
      */
-    public function setJsonEncodeErrorHandler(callable $jsonEncodeErrorHandler)
+    public function setJsonEncodeErrorHandler(callable $jsonEncodeErrorHandler): static
     {
         $this->jsonEncodeErrorHandler = $jsonEncodeErrorHandler;
         return $this;
@@ -69,18 +69,18 @@ trait ArkWebOutputTrait
     /**
      * @return int
      */
-    public function getCurrentHTTPCode()
+    public function getCurrentHTTPCode(): int
     {
         return http_response_code();
     }
 
     /**
      * @param string $contentType
-     * @param null|string $charSet
+     * @param string|null $charSet
      * @return ArkWebOutputTrait
      * @since 2.8.1 return $this
      */
-    public function setContentTypeHeader($contentType, $charSet = null)
+    public function setContentTypeHeader(string $contentType, ?string $charSet = null): static
     {
         $this->sendHeader("Content-Type: " . $contentType . ($charSet !== null ? '; charset=' . $charSet : ''));
         return $this;
@@ -91,7 +91,7 @@ trait ArkWebOutputTrait
      * @param bool $replace
      * @return $this
      */
-    public function sendHeader(string $header, $replace = true)
+    public function sendHeader(string $header, bool $replace = true): static
     {
         header($header, $replace);
         return $this;
@@ -105,7 +105,7 @@ trait ArkWebOutputTrait
      * @param mixed $debugInfo @since 3.4.7
      * Exception thrown @since 3.2.2 and could be handled @since 3.4.0
      */
-    public function jsonForAjax($code = ArkWebOutput::AJAX_JSON_CODE_OK, $data = '', $options = 0, $depth = 512, $debugInfo = null)
+    public function jsonForAjax(string $code = ArkWebOutput::AJAX_JSON_CODE_OK, $data = '', int $options = 0, int $depth = 512, $debugInfo = null): void
     {
         $x = ["code" => $code, "data" => $data];
         if ($debugInfo !== null) {
@@ -120,7 +120,7 @@ trait ArkWebOutputTrait
      * @param int $depth
      * Exception thrown @since 3.2.2 and could be handled @since 3.4.0
      */
-    public function json($anything, $options = 0, $depth = 512)
+    public function json($anything, int $options = 0, int $depth = 512): void
     {
         $response = json_encode($anything, $options, $depth);
         if ($response === false) {
@@ -142,7 +142,7 @@ trait ArkWebOutputTrait
      * @param array $params
      * Exception thrown @since 3.2.2 and could be handled @since 3.4.0
      */
-    public function displayPage($templateFile, $params = [])
+    public function displayPage(string $templateFile, array $params = []): void
     {
         if (!file_exists($templateFile)) {
             if (is_callable($this->displayPageTemplateMissingHandler)) {
@@ -162,7 +162,7 @@ trait ArkWebOutputTrait
      * @since 2.8.1
      * @since 3.1.7 remove urlencode on url
      */
-    public function redirect($url)
+    public function redirect(string $url): void
     {
         $this->sendHTTPCode(302);
         header("Location: " . $url);
@@ -173,7 +173,7 @@ trait ArkWebOutputTrait
      * @return ArkWebOutputTrait
      * @since 2.8.1 return $this instead of int
      */
-    public function sendHTTPCode(int $httpCode)
+    public function sendHTTPCode(int $httpCode): static
     {
         http_response_code($httpCode);
         return $this;
@@ -182,18 +182,18 @@ trait ArkWebOutputTrait
     /**
      * 文件通过非直接方式下载
      * @param string $file
-     * @param null $down_name Extension Free File Name For Download
-     * @param null|string $content_type
+     * @param string|null $content_type
+     * @param string|null $down_name Extension Free File Name For Download
      * @return bool
      * @throws TargetFileNotFoundError
      */
-    public function downloadFileIndirectly($file, $content_type = null, $down_name = null)
+    public function downloadFileIndirectly(string $file, ?string $content_type = null, ?string $down_name = null): bool
     {
         if (!file_exists($file)) {
             throw new TargetFileNotFoundError($file);
         }
 
-        if ($down_name !== null && $down_name !== false) {
+        if ($down_name !== null) {
             $extension = substr($file, strrpos($file, '.')); //获取文件后缀
             $down_name = $down_name . $extension; //新文件名，就是下载后的名字
         } else {
@@ -243,7 +243,7 @@ trait ArkWebOutputTrait
      * @return string
      * @since 1.5.0
      */
-    public function getMimeTypeByExtension($extension)
+    public function getMimeTypeByExtension(string $extension): string
     {
         $mime = (new MimeTypes())->getMimeType($extension);
         if ($mime === null) $mime = ArkWebOutput::CONTENT_TYPE_OCTET_STREAM;
@@ -255,13 +255,13 @@ trait ArkWebOutputTrait
      * @param string $baseUrl e.g. /protected (set in nginx config)
      * @param string $baseDirectory e.g. /var/code/protected_file
      * @param string $relativeFilePath e.g. sub_path/file.ext
-     * @param null|string $down_name e.g. customized.name
+     * @param string|null $down_name e.g. customized.name
      * @return bool
      * @throws TargetFileNotFoundError
      * @notice 依赖外部组件，用于生产环境时需要实地验证。
      * @since 2.9.0
      */
-    public function downloadFileThroughNginxSendFile($baseUrl, $baseDirectory, $relativeFilePath, $down_name = null)
+    public function downloadFileThroughNginxSendFile(string $baseUrl, string $baseDirectory, string $relativeFilePath, ?string $down_name = null): bool
     {
         /**
          * here base url is /protected
@@ -278,7 +278,7 @@ trait ArkWebOutputTrait
             throw new TargetFileNotFoundError($file);
         }
 
-        if ($down_name !== null && $down_name !== false) {
+        if ($down_name !== null) {
             $extension = substr($file, strrpos($file, '.')); //获取文件后缀
             $down_name = $down_name . $extension; //新文件名，就是下载后的名字
         } else {
@@ -293,10 +293,10 @@ trait ArkWebOutputTrait
 
             // 处理中文文件名
             $ua = $_SERVER ["HTTP_USER_AGENT"];
-            if (preg_match("/MSIE/", $ua)) {
+            if (str_contains($ua, "MSIE")) {
                 //$encoded_filename = rawurlencode ( $down_name );
                 header('Content-Disposition: attachment; filename="' . rawurlencode($down_name) . '"');
-            } else if (preg_match("/Firefox/", $ua)) {
+            } else if (str_contains($ua, "Firefox")) {
                 header("Content-Disposition: attachment; filename*=\"utf8''" . $down_name . '"');
             } else {
                 header('Content-Disposition: attachment; filename="' . $down_name . '"');

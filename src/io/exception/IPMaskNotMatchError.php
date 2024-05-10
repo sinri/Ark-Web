@@ -17,11 +17,11 @@ class IPMaskNotMatchError extends Exception
     /**
      * @var string
      */
-    protected $ip;
+    protected string $ip;
     /**
      * @var string
      */
-    protected $ipMask;
+    protected string $ipMask;
 
     public function __construct($ip, $ip_mask, $code = 0, Throwable $previous = null)
     {

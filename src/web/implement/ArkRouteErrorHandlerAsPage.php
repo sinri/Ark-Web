@@ -16,13 +16,13 @@ class ArkRouteErrorHandlerAsPage implements ArkRouteErrorHandlerInterface
     /**
      * @var string
      */
-    protected $templateFile;
+    protected string $templateFile;
 
     /**
      * ArkRouteErrorHandlerAsPage constructor.
      * @param string $templateFile
      */
-    public function __construct($templateFile = '')
+    public function __construct(string $templateFile = '')
     {
         $this->templateFile = $templateFile;
     }
@@ -31,7 +31,7 @@ class ArkRouteErrorHandlerAsPage implements ArkRouteErrorHandlerInterface
      * Override this, if you need a special template file selector
      * @return string
      */
-    public function getTemplateFile()
+    public function getTemplateFile(): string
     {
         return $this->templateFile;
     }
@@ -40,11 +40,11 @@ class ArkRouteErrorHandlerAsPage implements ArkRouteErrorHandlerInterface
      * @param Exception $error
      * @param int $http_code
      */
-    public function execute(Exception $error, int $http_code)
+    public function execute(Exception $error, int $http_code): void
     {
         try {
             $templateFile = $this->getTemplateFile();
-            if (!is_string($templateFile) || !file_exists($templateFile)) {
+            if (!file_exists($templateFile)) {
                 throw new TemplateFileNotFoundError($templateFile);
             }
             $parameters['exception'] = $error;

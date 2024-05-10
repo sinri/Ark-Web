@@ -14,7 +14,7 @@ use sinri\ark\io\validator\ArkWebInputValidateRule;
  */
 class ValidateRuleForStringRegex extends ArkWebInputValidateRule
 {
-    protected $regex;
+    protected ?string $regex;
 
     public function __construct(array $fieldPath, string $regex = null)
     {
@@ -27,18 +27,18 @@ class ValidateRuleForStringRegex extends ArkWebInputValidateRule
      * @param string $defaultValue
      * @return ValidateRuleForStringRegex
      */
-    public function default(string $defaultValue)
+    public function default(string $defaultValue): static
     {
         $this->defaultValue = $defaultValue;
         return $this;
     }
 
     /**
-     * @param mixed $inputValue
-     * @return string|null
+     * @param numeric|string $inputValue
+     * @return string
      * @throws ArkValidatorException
      */
-    public function getValidatedValue($inputValue)
+    public function getValidatedValue($inputValue): string
     {
         if (!is_string($inputValue) && !is_numeric($inputValue)) {
             if ($this->indispensable) {

@@ -25,10 +25,10 @@ class TestFilter extends ArkRequestFilter
      * @param $params
      * @param null $preparedData @since 1.3.6
      * @param int $responseCode @since 2.2.0
-     * @param null $error @since 2.2.0
+     * @param string|null $error @since 2.2.0
      * @return bool
      */
-    public function shouldAcceptRequest($path, $method, $params, &$preparedData = null, &$responseCode = 200, &$error = null)
+    public function shouldAcceptRequest($path, $method, $params, &$preparedData = null, int &$responseCode = 200, string &$error = null): bool
     {
         $x = ArkWebInput::getSharedInstance()->readRequest('token', false, '/^[A-Z]+$/');
         if ($x == 'wrong_token') {
@@ -42,7 +42,7 @@ class TestFilter extends ArkRequestFilter
      * Give filter a name for Error Report
      * @return string
      */
-    public function filterTitle()
+    public function filterTitle(): string
     {
         return "A Test Filter";
     }

@@ -19,7 +19,7 @@ class ArkRouterFreeTailRule extends ArkRouterRule
     /**
      * @var int
      */
-    protected $headComponentsCount;
+    protected int $headComponentsCount;
 
     /**
      * @param string[] $methods
@@ -27,7 +27,7 @@ class ArkRouterFreeTailRule extends ArkRouterRule
      * @param callable|string[] $callback a function with parameters in path, such as `function($p1,$p2,$tailComponents)` for above
      * @param string[] $filters ArkRequestFilter class name list
      */
-    public function __construct($methods, $path, $callback, $filters = [])
+    public function __construct(array $methods, string $path, $callback, array $filters = [])
     {
         parent::__construct();
 
@@ -56,19 +56,19 @@ class ArkRouterFreeTailRule extends ArkRouterRule
      * @return ArkRouterFreeTailRule
      * @deprecated since 3.1.0
      */
-    public static function buildRouteRule($methods, $path, $callback, $filters = [])
+    public static function buildRouteRule(array $methods, string $path, $callback, array $filters = []): ArkRouterFreeTailRule
     {
         return new ArkRouterFreeTailRule($methods, $path, $callback, $filters);
     }
 
     /**
-     * @param $path_string
-     * @param array|mixed $preparedData @since 1.1 this became reference and bug fixed
+     * @param string $path_string
+     * @param array $preparedData @since 1.1 this became reference and bug fixed
      * @param int $responseCode @since 1.1 this became reference
      * @throws ArkFilterRefuseRequestException
      * @throws GivenCallbackIsNotCallableException
      */
-    public function execute($path_string, &$preparedData = [], &$responseCode = 200)
+    public function execute(string $path_string, array &$preparedData = [], int &$responseCode = 200): void
     {
         $callable = $this->getCallback();//ArkHelper::readTarget($route, ArkRouter::ROUTE_PARAM_CALLBACK);
         $params = $this->getParsed();//ArkHelper::readTarget($route, ArkRouter::ROUTE_PARSED_PARAMETERS);
@@ -92,7 +92,7 @@ class ArkRouterFreeTailRule extends ArkRouterRule
     /**
      * @return string
      */
-    public function getType()
+    public function getType(): string
     {
         return "ArkRouterFreeTailRule";
     }

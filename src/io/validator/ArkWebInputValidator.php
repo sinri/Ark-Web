@@ -18,14 +18,14 @@ class ArkWebInputValidator
     /**
      * @var ArkWebInputValidateRule[]
      */
-    protected $validateRuleList;
+    protected array $validateRuleList;
 
     public function __construct()
     {
         $this->validateRuleList = [];
     }
 
-    public function registerValidateRule(ArkWebInputValidateRule $validateRule)
+    public function registerValidateRule(ArkWebInputValidateRule $validateRule): static
     {
         $this->validateRuleList[] = $validateRule;
         return $this;
@@ -35,7 +35,7 @@ class ArkWebInputValidator
      * @param ArkWebInputValidateRule[] $validateRules
      * @return $this
      */
-    public function registerValidateRules(array $validateRules)
+    public function registerValidateRules(array $validateRules): static
     {
         $this->validateRuleList = array_merge($this->validateRuleList, $validateRules);
         return $this;
@@ -47,7 +47,7 @@ class ArkWebInputValidator
      * @throws ArkValidatorException
      * @since 3.5.0 parameter `$validated` might be omitted, and it might be automatically generated, and be returned.
      */
-    public function validateWebRequest(ArkWebInputValidatedEntity $validated = null)
+    public function validateWebRequest(?ArkWebInputValidatedEntity $validated = null): ArkWebInputValidatedEntity
     {
         if ($validated === null) {
             $validated = new ArkWebInputValidatedEntity();
@@ -66,7 +66,7 @@ class ArkWebInputValidator
      * @throws ArkValidatorException
      * @since 3.5.0 parameter `$validated` might be omitted, and it might be automatically generated, and be returned.
      */
-    public function validateWebPost(ArkWebInputValidatedEntity $validated = null)
+    public function validateWebPost(ArkWebInputValidatedEntity $validated = null): ArkWebInputValidatedEntity
     {
         if ($validated === null) {
             $validated = new ArkWebInputValidatedEntity();
@@ -83,7 +83,7 @@ class ArkWebInputValidator
      * @param scalar[] $inputArray One Dimension Array
      * @throws ArkValidatorException
      */
-    public function formatArray(array &$inputArray)
+    public function formatArray(array &$inputArray): void
     {
         foreach ($this->validateRuleList as $validateRule) {
 //            echo 'checking rule for '.json_encode($validateRule->getFieldPath()).' | '.get_class($validateRule).PHP_EOL;

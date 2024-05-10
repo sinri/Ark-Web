@@ -20,11 +20,11 @@ use sinri\ark\io\WebInputIPHelper;
  */
 trait ArkWebInputTrait
 {
-    protected $headerHelper;
-    protected $ipHelper;
-    protected $uploadFileHelper;
-    protected $rawPostBody;
-    protected $rawPostBodyParsedAsJson;
+    protected WebInputHeaderHelper $headerHelper;
+    protected WebInputIPHelper $ipHelper;
+    protected WebInputFileUploadHelper $uploadFileHelper;
+    protected string|false $rawPostBody;
+    protected array|null|false $rawPostBodyParsedAsJson;
 
     public function __construct()
     {
@@ -62,7 +62,7 @@ trait ArkWebInputTrait
     /**
      * @return bool|string
      */
-    public function getRawPostBody()
+    public function getRawPostBody(): bool|string
     {
         return $this->rawPostBody;
     }
@@ -70,7 +70,7 @@ trait ArkWebInputTrait
     /**
      * @return mixed
      */
-    public function getRawPostBodyParsedAsJson()
+    public function getRawPostBodyParsedAsJson(): mixed
     {
         return $this->rawPostBodyParsedAsJson;
     }
@@ -92,7 +92,7 @@ trait ArkWebInputTrait
      * @since 2.6
      * @since 2.8.1 add a secondary parameter to checker when it is a callable function
      */
-    public function readIndispensableRequest(string $name, $checker = null)
+    public function readIndispensableRequest(string $name, $checker = null): mixed
     {
         $value = $this->readRequest($name);
         if ($value === null) {
@@ -120,7 +120,6 @@ trait ArkWebInputTrait
      * @param null|mixed $default
      * @param null|string $regex
      * @param null|LookUpTargetException $error
-     * @return mixed
      */
     public function readRequest($name, $default = null, $regex = null, &$error = null)
     {
@@ -138,7 +137,7 @@ trait ArkWebInputTrait
         return $value;
     }
 
-    public function readHeader($name, $default = null, $regex = null)
+    public function readHeader($name, $default = null, $regex = null): ?string
     {
         return $this->headerHelper->getHeader($name, $default, $regex);
     }
@@ -170,7 +169,7 @@ trait ArkWebInputTrait
      * @return mixed|null
      * @since 2.3
      */
-    public function readPostedJson($name, $default = null, $regex = null)
+    public function readPostedJson($name, $default = null, $regex = null): mixed
     {
         return ArkHelper::readTarget($this->rawPostBodyParsedAsJson, $name, $default, $regex, $error);
     }
@@ -180,7 +179,7 @@ trait ArkWebInputTrait
      * @return string
      * @since 3.0.1
      */
-    public function getRequestSourceIP($proxyIPs = [])
+    public function getRequestSourceIP(array $proxyIPs = []): string
     {
         //return $this->ipHelper->detectVisitorIP($proxyIPs);
         $ips = $this->ipHelper->readForwardIpLine();
@@ -192,7 +191,7 @@ trait ArkWebInputTrait
     /**
      * @return string
      */
-    public function getRequestMethod()
+    public function getRequestMethod(): string
     {
         $method = $this->readServer('REQUEST_METHOD');
         if ($method !== null) {

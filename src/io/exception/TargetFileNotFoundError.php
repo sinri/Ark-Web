@@ -17,7 +17,7 @@ class TargetFileNotFoundError extends Exception
     /**
      * @var string
      */
-    protected $targetFile;
+    protected string $targetFile;
 
     public function __construct(string $file, Throwable $previous = null)
     {

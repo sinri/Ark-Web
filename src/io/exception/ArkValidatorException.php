@@ -14,22 +14,10 @@ use Throwable;
  */
 class ArkValidatorException extends Exception
 {
-    /**
-     * @var array
-     */
-    protected $fieldPath;
-    /**
-     * @var mixed
-     */
-    protected $inputValue;
-    /**
-     * @var string
-     */
-    protected $feedback;
-    /**
-     * @var string
-     */
-    protected $reason;
+    protected array $fieldPath;
+    protected mixed $inputValue;
+    protected string $feedback;
+    protected string $reason;
 
     public function __construct(array $fieldPath, $inputValue, string $reason, string $feedback = '', $code = 0, Throwable $previous = null)
     {
@@ -80,9 +68,6 @@ class ArkValidatorException extends Exception
         return $this->fieldPath;
     }
 
-    /**
-     * @return mixed
-     */
     public function getInputValue()
     {
         return $this->inputValue;

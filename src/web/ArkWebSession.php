@@ -16,20 +16,20 @@ class ArkWebSession implements SessionHandlerInterface
     /**
      * @var string
      */
-    protected $sessionId;
+    protected string $sessionId;
     /**
      * @var string
      */
-    protected $sessionName;
+    protected string $sessionName;
     /**
      * @var string
      */
-    private $savePath;
+    private string $savePath;
 
     /**
      * @param string|null $sessionDir
      */
-    public static function sessionStart($sessionDir = null)
+    public static function sessionStart(?string $sessionDir = null): void
     {
         if (!empty($sessionDir)) {
             session_save_path($sessionDir);
@@ -64,23 +64,23 @@ class ArkWebSession implements SessionHandlerInterface
 //        }
 //    }
 
-    public function getSessionId()
+    public function getSessionId(): string
     {
         return $this->sessionId;
     }
 
-    public function setSessionId($id)
+    public function setSessionId(string $id): static
     {
         $this->sessionId = $id;
         return $this;
     }
 
-    public function getSessionName()
+    public function getSessionName(): string
     {
         return $this->sessionName;
     }
 
-    public function setSessionName($name)
+    public function setSessionName(string $name): static
     {
         $this->sessionName = $name;
         return $this;
@@ -95,7 +95,7 @@ class ArkWebSession implements SessionHandlerInterface
      * @param string $name <- $sessionName
      * @return boolean
      */
-    public function open($path, $name)
+    public function open(string $path, string $name): bool
     {
         $this->savePath = $path;
         if (!is_dir($this->savePath)) {
@@ -111,7 +111,7 @@ class ArkWebSession implements SessionHandlerInterface
      * or explicitly via session_write_close().
      *
      */
-    public function close()
+    public function close(): bool
     {
         return true;
     }
@@ -123,7 +123,7 @@ class ArkWebSession implements SessionHandlerInterface
      * @param string $id <- $id
      * @return string
      */
-    public function read($id)
+    public function read(string $id): string
     {
         return (string)@file_get_contents("$this->savePath/sess_$id");
     }
@@ -137,7 +137,7 @@ class ArkWebSession implements SessionHandlerInterface
      * @param string $data <- $data
      * @return bool
      */
-    public function write($id, $data)
+    public function write(string $id, string $data): bool
     {
         return !(file_put_contents("$this->savePath/sess_$id", $data) === false);
     }
@@ -149,7 +149,7 @@ class ArkWebSession implements SessionHandlerInterface
      * @param string $id <- $id
      * @return boolean
      */
-    public function destroy($id)
+    public function destroy(string $id): bool
     {
         $file = "$this->savePath/sess_$id";
         if (file_exists($file)) {
@@ -166,7 +166,7 @@ class ArkWebSession implements SessionHandlerInterface
      * @param int $max_lifetime
      * @return boolean
      */
-    public function gc($max_lifetime)
+    public function gc(int $max_lifetime): bool
     {
         foreach (glob("$this->savePath/sess_*") as $file) {
             if (filemtime($file) + $max_lifetime < time() && file_exists($file)) {

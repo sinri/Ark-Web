@@ -29,19 +29,13 @@ class WebInputIPHelper
      * @return    bool
      * @since 1.3.9 @see CodeIgniter Core
      */
-    public function validateIP($ip, $which = '')
+    public function validateIP(string $ip, string $which = ''): bool
     {
-        switch (strtolower($which)) {
-            case self::IP_TYPE_V4:
-                $which = FILTER_FLAG_IPV4;
-                break;
-            case self::IP_TYPE_V6:
-                $which = FILTER_FLAG_IPV6;
-                break;
-            default:
-                $which = NULL;
-                break;
-        }
+        $which = match (strtolower($which)) {
+            self::IP_TYPE_V4 => FILTER_FLAG_IPV4,
+            self::IP_TYPE_V6 => FILTER_FLAG_IPV6,
+            default => NULL,
+        };
 
         return (bool)filter_var($ip, FILTER_VALIDATE_IP, $which);
     }
@@ -51,10 +45,10 @@ class WebInputIPHelper
      * @param string $ip
      * @return string|bool IP_TYPE_Vx or FALSE when not validated
      */
-    public function determineVersionOfIP($ip)
+    public function determineVersionOfIP(string $ip): bool|string
     {
         if (!$this->validateIP($ip)) return false;
-        return strpos($ip, ":") === false ? self::IP_TYPE_V4 : self::IP_TYPE_V6;
+        return !str_contains($ip, ":") ? self::IP_TYPE_V4 : self::IP_TYPE_V6;
     }
 
     /**
@@ -67,7 +61,7 @@ class WebInputIPHelper
      * @see CodeIgniter Core
      * @deprecated @since 3.0.1
      */
-    public function detectVisitorIP($proxy_ips = [])
+    public function detectVisitorIP(array $proxy_ips = []): string
     {
         $ip_address = ArkHelper::readTarget($_SERVER, 'REMOTE_ADDR');
 
@@ -90,7 +84,7 @@ class WebInputIPHelper
             if ($spoof) {
                 for ($i = 0, $c = count($proxy_ips); $i < $c; $i++) {
                     // Check if we have an IP address or a subnet
-                    if (strpos($proxy_ips[$i], '/') === FALSE) {
+                    if (!str_contains($proxy_ips[$i], '/')) {
                         // An IP address (and not a subnet) is specified.
                         // We can compare right away.
                         if ($proxy_ips[$i] === $ip_address) {
@@ -105,7 +99,7 @@ class WebInputIPHelper
                     isset($separator) OR $separator = $this->validateIP($ip_address, self::IP_TYPE_V6) ? ':' : '.';
 
                     // If the proxy entry doesn't match the IP protocol - skip it
-                    if (strpos($proxy_ips[$i], $separator) === FALSE) {
+                    if (!str_contains($proxy_ips[$i], $separator)) {
                         continue;
                     }
 
@@ -134,8 +128,8 @@ class WebInputIPHelper
                     }
 
                     // Split the net_mask length off the network address
-                    $net_addr = null;
-                    $mask_len = null;
+                    //$net_addr = null;
+                    //$mask_len = null;
                     sscanf($proxy_ips[$i], '%[^/]/%d', $net_addr, $mask_len);
 
                     // Again, an IPv6 address is most likely in a compressed form
@@ -176,7 +170,7 @@ class WebInputIPHelper
      * @return string[]
      * @since 3.0.1
      */
-    public function readForwardIpLine()
+    public function readForwardIpLine(): array
     {
         $forwardForIpList = ArkHelper::readTarget($_SERVER, ['HTTP_X_FORWARDED_FOR'], '');
         if ($forwardForIpList === '') {
@@ -199,7 +193,7 @@ class WebInputIPHelper
      * @return string "0101010...00101"
      * @throws IPFormatError
      */
-    protected function ipv4ToBinaryString($ipv4components)
+    protected function ipv4ToBinaryString(array $ipv4components): string
     {
         for ($i = 0; $i < 4; $i++) {
             if ($ipv4components[$i] < 0 || $ipv4components[$i] > 255) {
@@ -224,7 +218,7 @@ class WebInputIPHelper
      * @throws IPFormatError
      * @since 3.0.2
      */
-    public function compareIPv4WithMask($ipv4WithMask, $ipv4)
+    public function compareIPv4WithMask(string $ipv4WithMask, string $ipv4): bool
     {
         if (!preg_match('/^(\d+)\.(\d+)\.(\d+)\.(\d+)\/(\d+)$/', $ipv4WithMask, $matches)) {
             throw new IPFormatError($ipv4WithMask);

@@ -17,5 +17,5 @@ abstract class WebInputFileUploadHandlerInterface
      * @param string &$error
      * @return bool
      */
-    abstract public function handle($original_file_name, $file_type, $file_size, $file_tmp_name, &$error);
+    abstract public function handle(string $original_file_name, string $file_type, int $file_size, string $file_tmp_name, string &$error): bool;
 }

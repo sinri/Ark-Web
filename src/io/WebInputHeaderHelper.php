@@ -14,8 +14,8 @@ use sinri\ark\core\ArkHelper;
 
 class WebInputHeaderHelper
 {
-    protected $headers;
-    protected $userAgentWorker;
+    protected array $headers;
+    protected ?Agent $userAgentWorker;
 
     public function __construct()
     {
@@ -34,7 +34,7 @@ class WebInputHeaderHelper
     /**
      * @return array
      */
-    public function getHeaders()
+    public function getHeaders(): array
     {
         return $this->headers;
     }
@@ -45,7 +45,7 @@ class WebInputHeaderHelper
      * @param string|null $regex
      * @return string|null
      */
-    public function getHeader($name, $default = null, $regex = null)
+    public function getHeader(string $name, ?string $default = null, ?string $regex = null): ?string
     {
         $lower_name = strtolower($name);
         return ArkHelper::readTarget($this->headers, $lower_name, $default, $regex);
@@ -55,7 +55,7 @@ class WebInputHeaderHelper
      * @return Agent
      * @since 1.5.0
      */
-    public function getUserAgentWorker()
+    public function getUserAgentWorker(): Agent
     {
         if (!$this->userAgentWorker) $this->userAgentWorker = new Agent();
         return $this->userAgentWorker;

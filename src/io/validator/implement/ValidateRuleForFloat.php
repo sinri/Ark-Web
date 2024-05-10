@@ -24,7 +24,7 @@ class ValidateRuleForFloat extends ArkWebInputValidateRule
      * @param float $defaultValue
      * @return ValidateRuleForFloat
      */
-    public function default(float $defaultValue)
+    public function default(float $defaultValue): static
     {
         $this->defaultValue = $defaultValue;
         return $this;
@@ -32,10 +32,10 @@ class ValidateRuleForFloat extends ArkWebInputValidateRule
 
     /**
      * @param mixed $inputValue
-     * @return float|null
+     * @return float
      * @throws ArkValidatorException
      */
-    public function getValidatedValue($inputValue)
+    public function getValidatedValue($inputValue): float
     {
         if (!is_numeric($inputValue)) {
             if ($this->indispensable) {

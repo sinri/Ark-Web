@@ -17,7 +17,7 @@ class ArkWebInputValidatedEntity
     /**
      * @var array
      */
-    private $inputData;
+    private array $inputData;
 
     public function __construct()
     {
@@ -29,7 +29,7 @@ class ArkWebInputValidatedEntity
      * @return static
      * @throws ArkValidatorException
      */
-    public static function validateWebRequest(ArkWebInputValidator $validator)
+    public static function validateWebRequest(ArkWebInputValidator $validator): static
     {
         $x = new static();
         $validator->validateWebRequest($x);
@@ -65,7 +65,7 @@ class ArkWebInputValidatedEntity
         return ArkHelper::readTarget($this->inputData, $fieldPath);
     }
 
-    public function write(array $fieldPath, $value)
+    public function write(array $fieldPath, $value): static
     {
         ArkHelper::writeIntoArray($this->inputData, $fieldPath, $value);
         return $this;

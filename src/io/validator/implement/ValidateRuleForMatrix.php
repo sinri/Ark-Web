@@ -19,7 +19,7 @@ class ValidateRuleForMatrix extends ArkWebInputValidateRule
     /**
      * @var ArkWebInputValidator
      */
-    protected $validatorForColumnsInEachRow;
+    protected ArkWebInputValidator $validatorForColumnsInEachRow;
 
     /**
      * ArkWebInputValidateRuleForMatrix constructor.
@@ -53,7 +53,7 @@ class ValidateRuleForMatrix extends ArkWebInputValidateRule
      * @param array[] $defaultValue
      * @return ValidateRuleForMatrix
      */
-    public function default(array $defaultValue)
+    public function default(array $defaultValue): static
     {
         foreach ($defaultValue as $item) {
             if (!is_array($item)) {
@@ -66,10 +66,10 @@ class ValidateRuleForMatrix extends ArkWebInputValidateRule
 
     /**
      * @param mixed $inputValue
-     * @return array|null
+     * @return array
      * @throws ArkValidatorException
      */
-    public function getValidatedValue($inputValue)
+    public function getValidatedValue($inputValue): array
     {
 //        echo 'checking rule for '.json_encode($this->getFieldPath()).' | '.self::class.PHP_EOL;
 //        echo "\t"."against value ".json_encode($inputValue).PHP_EOL;

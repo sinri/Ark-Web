@@ -32,13 +32,13 @@ class ArkWebOutput
     /**
      * @var ArkWebOutput
      */
-    protected static $instance;
+    protected static ArkWebOutput $instance;
 
 
     /**
      * @return ArkWebOutput
      */
-    public static function getSharedInstance()
+    public static function getSharedInstance(): ArkWebOutput
     {
         if (self::$instance === null) {
             self::$instance = new ArkWebOutput();

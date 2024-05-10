@@ -20,12 +20,12 @@ use sinri\ark\web\exception\ArkWebRequestMethodUnacceptableException;
 
 class ArkWebController
 {
-    /**
-     * @var array|null
-     * @deprecated since 3.5.x Do not use it directly, if needed, use `_readFilterGeneratedData` instead
-     * It might be renamed in the future, but now it would not be changed for stability
-     */
-    protected $filterGeneratedData;
+//    /**
+//     * @var array|null
+//     * @deprecated since 3.5.x Do not use it directly, if needed, use `_readFilterGeneratedData` instead
+//     * It might be renamed in the future, but now it would not be changed for stability
+//     */
+//    protected ?array $filterGeneratedData;
 
     /**
      * ArkWebController constructor.
@@ -34,17 +34,17 @@ class ArkWebController
      */
     public function __construct()
     {
-        $this->filterGeneratedData = ArkWebService::getSharedInstance()->getSharedData();
+//        $this->filterGeneratedData = ArkWebService::getSharedInstance()->getSharedData();
     }
 
     /**
-     * @param string|array $name
-     * @param mixed $default
-     * @param null|string $regex
+     * @param array|string $name
+     * @param mixed|null $default
+     * @param string|null $regex
      * @return mixed
      * @since 3.1.7
      */
-    protected function _readFilterGeneratedData($name, $default = null, $regex = null)
+    protected function _readFilterGeneratedData(array|string $name, mixed $default = null, ?string $regex = null): mixed
     {
         return ArkHelper::readTarget(ArkWebService::getSharedInstance()->getSharedData(), $name, $default, $regex);
     }
@@ -53,7 +53,7 @@ class ArkWebController
      * @return ArkWebInput
      * @since 1.1 method added
      */
-    protected function _getInputHandler()
+    protected function _getInputHandler(): ArkWebInput
     {
         return ArkWebInput::getSharedInstance();
     }
@@ -62,45 +62,45 @@ class ArkWebController
      * @return ArkWebOutput
      * @since 1.1 method added
      */
-    protected function _getOutputHandler()
+    protected function _getOutputHandler(): ArkWebOutput
     {
         return ArkWebOutput::getSharedInstance();
     }
 
     /**
-     * @param string|array $name
-     * @param mixed $default
-     * @param null|string $regex
-     * @param null|LookUpTargetException $error
+     * @param array|string $name
+     * @param mixed|null $default
+     * @param string|null $regex
+     * @param LookUpTargetException|null $error
      * @return mixed
      * @since 1.1 method added
      */
-    protected function _readRequest($name, $default = null, $regex = null, &$error = null)
+    protected function _readRequest(array|string $name, mixed $default = null, ?string $regex = null, ?LookUpTargetException &$error = null): mixed
     {
         return ArkWebInput::getSharedInstance()
             ->readRequest($name, $default, $regex, $error);
     }
 
     /**
-     * @param string|array $name
-     * @param mixed $default
-     * @param null|string $regex
+     * @param array|string $name
+     * @param mixed|null $default
+     * @param string|null $regex
      * @return mixed
      */
-    protected function _readCookie($name, $default = null, $regex = null)
+    protected function _readCookie(array|string $name, mixed $default = null, ?string $regex = null): mixed
     {
         return ArkWebInput::getSharedInstance()
             ->readCookie($name, $default, $regex);
     }
 
     /**
-     * @param string|array $name
-     * @param mixed $default
-     * @param null|string $regex
+     * @param array|string $name
+     * @param mixed|null $default
+     * @param string|null $regex
      * @return mixed
      * @since 3.1.7
      */
-    protected function _readSession($name, $default = null, $regex = null)
+    protected function _readSession(array|string $name, mixed $default = null, ?string $regex = null): mixed
     {
         return ArkWebInput::getSharedInstance()
             ->readSession($name, $default, $regex);
@@ -128,7 +128,7 @@ class ArkWebController
      * @since 2.6
      * @since 3.4.6 parameter `checker` is default as `null`
      */
-    protected function _readIndispensableRequest($name, $checker = null)
+    protected function _readIndispensableRequest(string $name, $checker = null): mixed
     {
         return ArkWebInput::getSharedInstance()
             ->readIndispensableRequest($name, $checker);
@@ -138,7 +138,7 @@ class ArkWebController
      * If you want to track a request, use this method to get the serial number of a request.
      * @return string
      */
-    protected function _getRequestSerial()
+    protected function _getRequestSerial(): string
     {
         return ArkWebService::getSharedInstance()
             ->getRequestSerial();
@@ -150,7 +150,7 @@ class ArkWebController
      * @since 3.4.4 throw specified exception
      * @since 3.1.7
      */
-    protected function _assertMetExpectedMethods(array $expectedMethods)
+    protected function _assertMetExpectedMethods(array $expectedMethods): void
     {
         if (!in_array($this->_getInputHandler()->getRequestMethod(), $expectedMethods)) {
             throw new ArkWebRequestMethodUnacceptableException("Access with unexpected method", 405);
@@ -162,7 +162,7 @@ class ArkWebController
      * @param int $httpCode
      * @since 3.1.7
      */
-    protected function _sayJson($json, $httpCode = 200)
+    protected function _sayJson($json, int $httpCode = 200): void
     {
         ArkWebOutput::getSharedInstance()
             ->sendHTTPCode($httpCode)
@@ -175,7 +175,7 @@ class ArkWebController
      * @param int $httpCode
      * @param mixed $debugInfo @since 3.4.7
      */
-    protected function _sayOK($data = "", $httpCode = 200, $debugInfo = null)
+    protected function _sayOK($data = "", int $httpCode = 200, $debugInfo = null): void
     {
         ArkWebOutput::getSharedInstance()
             ->sendHTTPCode($httpCode)
@@ -189,7 +189,7 @@ class ArkWebController
      * @param mixed $debugInfo @since 3.4.7
      * @deprecated since 3.5.0 It is now recommended to use `throw new ArkWebRequestFailed` instead
      */
-    protected function _sayFail($error = "", $httpCode = 200, $debugInfo = null)
+    protected function _sayFail($error = "", int $httpCode = 200, $debugInfo = null): void
     {
         ArkWebOutput::getSharedInstance()
             ->sendHTTPCode($httpCode)
@@ -202,7 +202,7 @@ class ArkWebController
      * @param array $params
      * @param int $httpCode
      */
-    protected function _showPage($templateFile, $params = [], $httpCode = 200)
+    protected function _showPage(string $templateFile, array $params = [], int $httpCode = 200): void
     {
         ArkWebOutput::getSharedInstance()
             ->sendHTTPCode($httpCode)

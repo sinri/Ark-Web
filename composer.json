@@ -11,15 +11,15 @@
     ],
     "minimum-stability": "stable",
     "require": {
-        "sinri/ark-core": "^2.7",
-        "ralouphie/getallheaders": "^2.0",
+        "sinri/ark-core": "~3.0",
+        "ralouphie/getallheaders": "^3.0",
+        "xantios/mimey": "^2.0",
         "jenssegers/agent": "^2.6",
-        "ralouphie/mimey": "^1.0",
-        "doctrine/annotations": "~1.13",
+        "doctrine/annotations": "~2.0",
         "ext-json": "*"
     },
     "require-dev": {
-        "sinri/ark-curl": "^2.1",
+        "sinri/ark-curl": "^3.0",
         "ext-curl": "*"
     },
     "autoload": {

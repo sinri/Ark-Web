@@ -13,7 +13,7 @@ class ArkWebRequestFailed extends RuntimeException
     /**
      * @var array
      */
-    protected $detail;
+    protected array $detail;
 
     public function __construct(string $message, array $detail = [], int $httpStatusCode = 200, Throwable $previous = null)
     {

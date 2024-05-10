@@ -17,7 +17,7 @@ class ArkRouteErrorHandlerAsJson implements ArkRouteErrorHandlerInterface
      * @param int $http_code
      * Do not throw Exception from inside!
      */
-    public function execute(Exception $error, int $http_code)
+    public function execute(Exception $error, int $http_code): void
     {
         $data = [
             'error' => $error->getMessage()

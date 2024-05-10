@@ -30,7 +30,7 @@ class ValidateRuleForNumericString extends ArkWebInputValidateRule
      * @param numeric-string $defaultValue
      * @return ValidateRuleForNumericString
      */
-    public function default(string $defaultValue)
+    public function default(string $defaultValue): static
     {
         $this->defaultValue = $defaultValue;
         if (!is_numeric($defaultValue)) {
@@ -41,10 +41,10 @@ class ValidateRuleForNumericString extends ArkWebInputValidateRule
 
     /**
      * @param mixed $inputValue
-     * @return numeric-string|null
+     * @return numeric-string
      * @throws ArkValidatorException
      */
-    public function getValidatedValue($inputValue)
+    public function getValidatedValue($inputValue): string
     {
         if (!is_numeric($inputValue)) {
             if ($this->indispensable) {

@@ -25,35 +25,35 @@ class ArkWebService
     /**
      * @var ArkWebService
      */
-    protected static $instance;
+    protected static ArkWebService $instance;
     /**
      * @var bool
      */
-    protected $debug;
+    protected bool $debug;
     /**
      * @var ArkLogger
      */
-    protected $logger;
+    protected ArkLogger $logger;
     /**
      * @var ArkRouter
      */
-    protected $router;
+    protected ArkRouter $router;
     /**
      * @var string
      */
-    protected $requestSerial;
+    protected string $requestSerial;
     /**
      * @var float
      * @since 3.2.3
      * @since 3.4.1 from int to float
      */
-    protected $startTime;
+    protected float $startTime;
     /**
      * @var float
      * @since 3.2.3
      * @since 3.4.1 from int to float
      */
-    protected $endTime;
+    protected float $endTime;
     /**
      * @var callable
      */
@@ -61,18 +61,18 @@ class ArkWebService
     /**
      * @var string
      */
-    protected $gateway;
+    protected string $gateway;
     /**
-     * @var null|array|mixed
+     * @var array
      * Till 3.2.2 it was named as `filterGeneratedData`
      * @since 3.2.3
      */
-    protected $sharedData;
+    protected array $sharedData;
     /**
      * @var string
      * @since 3.4.1
      */
-    protected $currentRequestPath;
+    protected string $currentRequestPath;
 
     public function __construct()
     {
@@ -83,13 +83,13 @@ class ArkWebService
         $this->logger = ArkLogger::makeSilentLogger();
         $this->debug = false;
         $this->router = new ArkRouter();
-        $this->sharedData = null;
+        $this->sharedData = [];
     }
 
     /**
      * @return ArkWebService
      */
-    public static function getSharedInstance()
+    public static function getSharedInstance(): ArkWebService
     {
         if (self::$instance === null) {
             self::$instance = new ArkWebService();
@@ -163,19 +163,9 @@ class ArkWebService
     }
 
     /**
-     * @return null
      * @since 3.2.3 renamed from `getFilterGeneratedData`
      */
-    public function getSharedData()
-    {
-        return $this->sharedData;
-    }
-
-    /**
-     * @return null
-     * @deprecated since 3.2.3
-     */
-    public function getFilterGeneratedData()
+    public function getSharedData(): array
     {
         return $this->sharedData;
     }
@@ -184,7 +174,7 @@ class ArkWebService
      * @param bool $debug
      * @return ArkWebService
      */
-    public function setDebug(bool $debug)
+    public function setDebug(bool $debug): static
     {
         $this->debug = $debug;
         return $this;
@@ -194,7 +184,7 @@ class ArkWebService
      * @param string $gateway
      * @return ArkWebService
      */
-    public function setGateway(string $gateway)
+    public function setGateway(string $gateway): static
     {
         $this->gateway = $gateway;
         return $this;
@@ -204,7 +194,7 @@ class ArkWebService
      * @param ArkLogger $logger
      * @return ArkWebService
      */
-    public function setLogger($logger)
+    public function setLogger(ArkLogger $logger): static
     {
         $this->logger = $logger;
         return $this;
@@ -213,7 +203,7 @@ class ArkWebService
     /**
      * This is commonly a final call after other configurations
      */
-    public function handleRequest()
+    public function handleRequest(): void
     {
         if (ArkHelper::isCLI()) {
             $this->handleRequestForCLI();
@@ -225,7 +215,7 @@ class ArkWebService
     /**
      * This is commonly a final call after other configurations
      */
-    public function handleRequestForCLI()
+    public function handleRequestForCLI(): void
     {
         global $argc;
         global $argv;
@@ -262,7 +252,7 @@ class ArkWebService
     /**
      * This is commonly a final call after other configurations
      */
-    public function handleRequestForWeb()
+    public function handleRequestForWeb(): void
     {
         try {
             $this->dividePath($this->currentRequestPath);
@@ -273,7 +263,7 @@ class ArkWebService
             $code = 200;
             // the controller is assumed to throw ArkWebRequestFailed when error response is expected
             $route->execute($this->currentRequestPath, $this->sharedData, $code);
-        } catch (ArkWebRequestFailed | ArkRouteNoMatchedException | GivenCallbackIsNotCallableException | ArkFilterRefuseRequestException | ArkWebRequestMethodUnacceptableException $exception) {
+        } catch (ArkWebRequestFailed|ArkRouteNoMatchedException|GivenCallbackIsNotCallableException|ArkFilterRefuseRequestException|ArkWebRequestMethodUnacceptableException $exception) {
             // since 3.5.0 Special exceptions would be caught for customized HTTP status code
             $this->router->handleRouteError($exception, $exception->getCode());
         } catch (Exception $exception) {
@@ -291,7 +281,7 @@ class ArkWebService
      * @param string $pathString It would be as output.
      * @return string[] array of components
      */
-    protected function dividePath(&$pathString = '')
+    protected function dividePath(string &$pathString = ''): array
     {
         $sub_paths = array();
         if (ArkHelper::isCLI()) {
@@ -324,14 +314,14 @@ class ArkWebService
         return $sub_paths;
     }
 
-    protected function fetchControllerPathString()
+    protected function fetchControllerPathString(): string
     {
         $prefix = $_SERVER['SCRIPT_NAME'];
         //$delta=10;//original
         $delta = strlen($this->gateway) + 1;
 
         if (
-            (strpos($_SERVER['REQUEST_URI'], $prefix) !== 0)
+            (!str_starts_with($_SERVER['REQUEST_URI'], $prefix))
             && (strrpos($prefix, '/' . $this->gateway) + $delta == strlen($prefix))
         ) {
             $prefix = substr($prefix, 0, strlen($prefix) - $delta);
@@ -342,11 +332,11 @@ class ArkWebService
 
     /**
      * If you decide to use PHP Session, please run this before the code to handle request.
-     * @param $sessionDir
+     * @param string $sessionDir
      * @return ArkWebService
      * @deprecated Session could be implemented in many ways, this is not a good name. use startPHPSession instead.
      */
-    public function startSession($sessionDir)
+    public function startSession(string $sessionDir): static
     {
         return $this->startPHPSession($sessionDir);
     }
@@ -355,7 +345,7 @@ class ArkWebService
      * @param string $sessionDir
      * @return ArkWebService
      */
-    public function startPHPSession($sessionDir)
+    public function startPHPSession(string $sessionDir): static
     {
         ArkWebSession::sessionStart($sessionDir);
         return $this;
@@ -364,7 +354,7 @@ class ArkWebService
     /**
      * @param string $pathPrefix no leading and tail '/'
      * @param string $baseDirPath
-     * @param ArkRequestFilter[] $filters
+     * @param string[] $filters ArkRequestFilter Impl Class Names
      * @param null|callable $fileHandler e.g. function($realPath,$components):void if null, execute default downloader @since 2.7.2 added a secondary parameter in 2.8.1
      * @param null|callable $dirHandler e.g. function($realPath,$components):void if null, use default HTML display @since 2.8.1
      * @return ArkRouter @since 2.8.1
@@ -375,52 +365,57 @@ class ArkWebService
      * binding a uri path prefix to a file system path prefix.
      *
      */
-    public function setupFileSystemViewer($pathPrefix, $baseDirPath, $filters = [], $fileHandler = null, $dirHandler = null)
+    public function setupFileSystemViewer(string $pathPrefix, string $baseDirPath, array $filters = [], $fileHandler = null, $dirHandler = null): ArkRouter
     {
-        return $this->router->get($pathPrefix, function ($components) use ($dirHandler, $fileHandler, $pathPrefix, $baseDirPath) {
-            if (count($components) === 1 && $components[0] === '') {
-                $components = [];
-            }
-            $baseDirPath = realpath($baseDirPath);
-            if ($baseDirPath === false) {
-                throw new Exception("Resource Configuration Error!", 500);
-            }
-            $rawPath = $baseDirPath . (empty($components) ? "" : "/" . implode("/", $components));
-            $realPath = realpath($rawPath);
-            if ($realPath === false || $realPath !== $rawPath) {
-                throw new Exception("Illegal Resource Index!", 400);
-            }
-            if (!file_exists($realPath)) {
-                throw new Exception("Resource Not Found!", 404);
-            }
-            if (is_dir($realPath)) {
-                // if dir path not ends with / add one to its tail
-                $parts = explode("?", $_SERVER['REQUEST_URI']);
-                $path = $parts[0];
-                if (substr($path, strlen($path) - 1, 1) !== '/') {
-                    header("Location: " . $path . '/' . (count($parts) > 1 ? "?" . $parts[1] : ""));
-                    return;
+        return $this->router->get(
+            $pathPrefix,
+            function ($components) use ($dirHandler, $fileHandler, $pathPrefix, $baseDirPath) {
+                if (count($components) === 1 && $components[0] === '') {
+                    $components = [];
                 }
+                $baseDirPath = realpath($baseDirPath);
+                if ($baseDirPath === false) {
+                    throw new Exception("Resource Configuration Error!", 500);
+                }
+                $rawPath = $baseDirPath . (empty($components) ? "" : "/" . implode("/", $components));
+                $realPath = realpath($rawPath);
+                if ($realPath === false || $realPath !== $rawPath) {
+                    throw new Exception("Illegal Resource Index!", 400);
+                }
+                if (!file_exists($realPath)) {
+                    throw new Exception("Resource Not Found!", 404);
+                }
+                if (is_dir($realPath)) {
+                    // if dir path not ends with / add one to its tail
+                    $parts = explode("?", $_SERVER['REQUEST_URI']);
+                    $path = $parts[0];
+                    if (!str_ends_with($path, '/')) {
+                        header("Location: " . $path . '/' . (count($parts) > 1 ? "?" . $parts[1] : ""));
+                        return;
+                    }
 
-                if (is_callable($dirHandler)) {
-                    call_user_func_array($dirHandler, [$realPath, $components]);
+                    if (is_callable($dirHandler)) {
+                        call_user_func_array($dirHandler, [$realPath, $components]);
+                    } else {
+                        //Ark()->webOutput()
+                        ArkWebOutput::getSharedInstance()
+                            ->displayPage(__DIR__ . '/template/FileSystemViewerDirPageTemplate.php', [
+                                'components' => $components,
+                                'realPath' => $realPath,
+                            ]);
+                    }
                 } else {
-                    //Ark()->webOutput()
-                    ArkWebOutput::getSharedInstance()
-                        ->displayPage(__DIR__ . '/template/FileSystemViewerDirPageTemplate.php', [
-                            'components' => $components,
-                            'realPath' => $realPath,
-                        ]);
+                    // show content
+                    if (is_callable($fileHandler)) {
+                        call_user_func_array($fileHandler, [$realPath, $components]);
+                    } else {
+                        ArkWebOutput::getSharedInstance()
+                            ->downloadFileIndirectly($realPath);
+                    }
                 }
-            } else {
-                // show content
-                if (is_callable($fileHandler)) {
-                    call_user_func_array($fileHandler, [$realPath, $components]);
-                } else {
-                    ArkWebOutput::getSharedInstance()
-                        ->downloadFileIndirectly($realPath);
-                }
-            }
-        }, $filters, true);
+            },
+            $filters,
+            true
+        );
     }
 }

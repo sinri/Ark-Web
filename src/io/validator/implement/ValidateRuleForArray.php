@@ -12,7 +12,7 @@ class ValidateRuleForArray extends ArkWebInputValidateRule
     /**
      * @var ArkWebInputValidateRule
      */
-    protected $validateRuleForItem;
+    protected ArkWebInputValidateRule $validateRuleForItem;
 
     public function __construct(array $fieldPath, ArkWebInputValidateRule $validateRuleForItem)
     {
@@ -38,7 +38,7 @@ class ValidateRuleForArray extends ArkWebInputValidateRule
         return $this;
     }
 
-    public function getValidatedValue($inputValue)
+    public function getValidatedValue($inputValue): array
     {
         if (!is_array($inputValue)) {
             throw new ArkValidatorException($this->fieldPath, $inputValue, "NOT AN ARRAY", $this->invalidFeedback);

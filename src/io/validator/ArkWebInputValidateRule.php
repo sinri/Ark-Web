@@ -17,19 +17,16 @@ abstract class ArkWebInputValidateRule
     /**
      * @var array (int|string)[]
      */
-    protected $fieldPath;
-    /**
-     * @var mixed
-     */
+    protected array $fieldPath;
     protected $defaultValue;
     /**
      * @var bool
      */
-    protected $indispensable;
+    protected bool $indispensable;
     /**
      * @var string
      */
-    protected $invalidFeedback;
+    protected string $invalidFeedback;
 
     public function __construct(array $fieldPath)
     {
@@ -65,9 +62,6 @@ abstract class ArkWebInputValidateRule
         return $this->fieldPath;
     }
 
-    /**
-     * @return mixed
-     */
     public function getDefaultValue()
     {
         return $this->defaultValue;
@@ -101,8 +95,6 @@ abstract class ArkWebInputValidateRule
     }
 
     /**
-     * @param mixed $inputValue
-     * @return mixed
      * @throws ArkValidatorException
      */
     abstract public function getValidatedValue($inputValue);

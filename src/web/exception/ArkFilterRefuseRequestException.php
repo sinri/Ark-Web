@@ -14,8 +14,8 @@ use Exception;
  */
 class ArkFilterRefuseRequestException extends Exception
 {
-    protected $filterError;
-    protected $filterTitle;
+    protected string $filterError;
+    protected string $filterTitle;
 
     public function __construct($filterError = "", $filterTitle = '', $code = 403)
     {

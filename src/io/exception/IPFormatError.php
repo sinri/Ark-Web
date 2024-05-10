@@ -14,7 +14,7 @@ use Throwable;
  */
 class IPFormatError extends Exception
 {
-    protected $ip;
+    protected string $ip;
 
     public function __construct($ip = "", $code = 0, Throwable $previous = null)
     {

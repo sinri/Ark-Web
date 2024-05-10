@@ -26,24 +26,19 @@ abstract class ArkRouterRule
     /**
      * @var string[] ArkRequestFilter class name list
      */
-    protected $filters;
+    protected array $filters;
     /**
      * @var bool
      */
-    protected $forAnyMethod;
-    /**
-     * @var string
-     * @deprecated since 3.2.0, ArkRouterRule recommends multi-methods
-     */
-//    protected $method;
+    protected bool $forAnyMethod;
     /**
      * @var string[]
      */
-    protected $methods;
+    protected array $methods;
     /**
      * @var string
      */
-    protected $path;
+    protected string $path;
     /**
      * @var callable|string[]
      */
@@ -51,11 +46,11 @@ abstract class ArkRouterRule
     /**
      * @var string
      */
-    protected $namespace;
+    protected string $namespace;
     /**
      * @var string[]
      */
-    protected $parsed;
+    protected array $parsed;
 
     public function __construct()
     {
@@ -111,7 +106,7 @@ abstract class ArkRouterRule
     /**
      * @return string[]
      */
-    public function getMethods()
+    public function getMethods(): array
     {
         return $this->methods;
     }
@@ -120,7 +115,7 @@ abstract class ArkRouterRule
      * @param string[] $methods
      * @return ArkRouterRule
      */
-    public function setMethods($methods): ArkRouterRule
+    public function setMethods(array $methods): ArkRouterRule
     {
         if (in_array(ArkWebInput::METHOD_ANY, $methods)) {
             $this->forAnyMethod = true;
@@ -159,7 +154,7 @@ abstract class ArkRouterRule
      * @param callable|string[] $callback
      * @return ArkRouterRule
      */
-    public function setCallback($callback)
+    public function setCallback($callback): static
     {
         $this->callback = $callback;
         return $this;
@@ -227,11 +222,9 @@ abstract class ArkRouterRule
     {
         $methodsExpression = implode("|", $this->methods);
         $filterTitles = [];
-        if (is_array($this->filters)) {
-            foreach ($this->filters as $filterClassName) {
-                $filterInstance = ArkRequestFilter::makeInstance($filterClassName);
-                $filterTitles[] = $filterInstance->filterTitle();
-            }
+        foreach ($this->filters as $filterClassName) {
+            $filterInstance = ArkRequestFilter::makeInstance($filterClassName);
+            $filterTitles[] = $filterInstance->filterTitle();
         }
         $filterTitles = implode(' → ', $filterTitles);
         if (0 == strlen($filterTitles)) {
@@ -251,12 +244,12 @@ abstract class ArkRouterRule
      * @param string $className class name with full namespace; use X::CLASS is recommended.
      * @param string $methodName
      */
-    public function setCallbackWithClassNameAndMethod($className, $methodName)
+    public function setCallbackWithClassNameAndMethod(string $className, string $methodName): void
     {
         $this->callback = self::buildCallbackDescriptionWithClassNameAndMethod($className, $methodName);
     }
 
-    public static function buildCallbackDescriptionWithClassNameAndMethod($className, $methodName)
+    public static function buildCallbackDescriptionWithClassNameAndMethod(string $className, string $methodName): array
     {
         return [$className, $methodName];
     }
@@ -272,15 +265,15 @@ abstract class ArkRouterRule
 //    abstract public static function buildRouteRule($method, $path, $callback, $filters = []);
 
     /**
-     * @param $path_string
-     * @param array|mixed $preparedData @since 1.1 this became reference and bug fixed
+     * @param string $path_string
+     * @param array $preparedData @since 1.1 this became reference and bug fixed
      * @param int $responseCode @since 1.1 this became reference
      * @throws ArkFilterRefuseRequestException
      * @throws GivenCallbackIsNotCallableException
      * @throws ArkWebRequestFailed since 3.5.0
      * @throws ArkWebRequestMethodUnacceptableException since 3.5.0
      */
-    public function execute($path_string, &$preparedData = [], &$responseCode = 200)
+    public function execute(string $path_string,array &$preparedData = [], int &$responseCode = 200): void
     {
         $callable = $this->getCallback();//ArkHelper::readTarget($route, ArkRouter::ROUTE_PARAM_CALLBACK);
         $params = $this->getParsed();//ArkHelper::readTarget($route, ArkRouter::ROUTE_PARSED_PARAMETERS);
@@ -298,7 +291,7 @@ abstract class ArkRouterRule
      * @param int $responseCode
      * @throws ArkFilterRefuseRequestException
      */
-    protected static function executeWithFilters($params, $filter_chain, $path_string, &$preparedData = [], &$responseCode = 200)
+    protected static function executeWithFilters($params, $filter_chain, $path_string, &$preparedData = [], int &$responseCode = 200): void
     {
         if (!is_array($filter_chain)) {
             $filter_chain = [$filter_chain];
@@ -338,7 +331,7 @@ abstract class ArkRouterRule
      * i.e. Static Methods are not supported here.
      *
      */
-    protected static function executeWithParameters($callable, $params)
+    protected static function executeWithParameters($callable, $params): void
     {
         if (is_array($callable)) {
             if (count($callable) !== 2) {
@@ -356,16 +349,16 @@ abstract class ArkRouterRule
     /**
      * @return string
      */
-    abstract public function getType();
+    abstract public function getType(): string;
 
     /**
      * @param string $incomingPath
-     * @return false|string
+     * @return string
      */
-    protected function preprocessIncomingPath(string $incomingPath)
+    protected function preprocessIncomingPath(string $incomingPath): string
     {
         $path = $incomingPath;// as is for static
-        if (strlen($incomingPath) > 1 && substr($incomingPath, strlen($incomingPath) - 1, 1) == '/') {
+        if (strlen($incomingPath) > 1 && str_ends_with($incomingPath, '/')) {
             $path = substr($incomingPath, 0, strlen($incomingPath) - 1);// this should be cut for non-static route rule
         } elseif ($incomingPath == '') {
             $path = '/'; // fulfill as no leading `/`
@@ -373,7 +366,7 @@ abstract class ArkRouterRule
         return $path;
     }
 
-    protected function checkIfMatchMethod(string $method)
+    protected function checkIfMatchMethod(string $method): bool
     {
         return $this->forAnyMethod || in_array($method, $this->methods);
     }
@@ -381,24 +374,20 @@ abstract class ArkRouterRule
     /**
      * @param string $method
      * @param string $incomingPath
-     * @param null|ArkLogger $logger
+     * @param ArkLogger|null $logger
      * @return boolean
      */
-    public function checkIfMatchRequest($method, $incomingPath, $logger = null)
+    public function checkIfMatchRequest(string $method, string $incomingPath, ?ArkLogger $logger = null): bool
     {
-        if ($logger) {
-            $logger->debug(
-                __METHOD__ . '@' . __LINE__ . ' this rule: ' . $this->__toString(),
-                [
-                    'req_method' => $method,
-                    'req_incoming_path' => $incomingPath,
-                ]
-            );
-        }
+        $logger?->debug(
+            __METHOD__ . '@' . __LINE__ . ' this rule: ' . $this->__toString(),
+            [
+                'req_method' => $method,
+                'req_incoming_path' => $incomingPath,
+            ]
+        );
         if (!$this->checkIfMatchMethod($method)) {
-            if ($logger) {
-                $logger->debug(__METHOD__ . '@' . __LINE__ . " Rule Method Matched Fails");
-            }
+            $logger?->debug(__METHOD__ . '@' . __LINE__ . " Rule Method Matched Fails");
             return false;
         }
         $path = $this->preprocessIncomingPath($incomingPath);
@@ -407,16 +396,14 @@ abstract class ArkRouterRule
         if (preg_match($route_regex, $path, $matches)) {
             if (!empty($matches)) array_shift($matches);
             $matches = array_filter($matches, function ($v) {
-                return substr($v, 0, 1) != '/';
+                return !str_starts_with($v, '/');
             });
             $matches = array_values($matches);
             array_walk($matches, function (&$v) {
                 $v = urldecode($v);
             });
             $this->setParsed($matches);
-            if ($logger) {
-                $logger->debug(__METHOD__ . '@' . __LINE__ . " MATCHED with " . json_encode($matches));
-            }
+            $logger?->debug(__METHOD__ . '@' . __LINE__ . " MATCHED with " . json_encode($matches));
             return true;
         }
 
@@ -435,7 +422,7 @@ abstract class ArkRouterRule
      * @param bool $forAnyMethod
      * @return ArkRouterRule
      */
-    public function setForAnyMethod(bool $forAnyMethod)
+    public function setForAnyMethod(bool $forAnyMethod): static
     {
         $this->forAnyMethod = $forAnyMethod;
         return $this;

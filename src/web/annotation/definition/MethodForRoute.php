@@ -11,19 +11,19 @@ final class MethodForRoute
     /**
      * @var string|array<string> comma seperated, such as GET,POST
      */
-    public $method;
+    public string|array $method;
     /**
      * @var string
      */
-    public $path;
+    public string $path;
     /**
      * @var string|array<string> comma seperated, such as xx\Filter1,xx\Filter2
      */
-    public $filters;
+    public string|array $filters;
     /**
      * @var bool
      */
-    public $withFreeTail;
+    public bool $withFreeTail;
 
     public function __construct()
     {
@@ -33,13 +33,13 @@ final class MethodForRoute
         $this->filters = '';
     }
 
-    public function getMethods()
+    public function getMethods(): array|string
     {
         if (is_array($this->method)) return $this->method;
         return array_filter(explode(',', $this->method));
     }
 
-    public function getFilters()
+    public function getFilters(): array|string
     {
         if (is_array($this->filters)) return $this->filters;
         return array_filter(explode(',', $this->filters));

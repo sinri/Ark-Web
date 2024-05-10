@@ -23,7 +23,7 @@ class ArkRouterAutoRestfulRule extends ArkRouterRule
      * @param string $namespace no ending \ and X::class is also supported @since 3.2.1
      * @param string[] $filter array of class name
      */
-    public function __construct($methods, $path, $namespace, $filter = [])
+    public function __construct(array $methods, string $path, string $namespace, array $filter = [])
     {
         parent::__construct();
 
@@ -37,7 +37,7 @@ class ArkRouterAutoRestfulRule extends ArkRouterRule
     /**
      * @inheritDoc
      */
-    public function getType()
+    public function getType(): string
     {
         return "ArkRouterAutoRestfulRule";
     }
@@ -45,37 +45,31 @@ class ArkRouterAutoRestfulRule extends ArkRouterRule
     /**
      * @param string $method
      * @param string $incomingPath
-     * @param null|ArkLogger $logger
+     * @param ArkLogger|null $logger
      * @return bool
      */
-    public function checkIfMatchRequest($method, $incomingPath, $logger = null)
+    public function checkIfMatchRequest(string $method, string $incomingPath, ArkLogger $logger = null): bool
     {
-        if ($logger) {
-            $logger->debug(
-                __METHOD__ . '@' . __LINE__ . ' this rule: ' . $this->__toString(),
-                [
-                    'req_method' => $method,
-                    'req_incoming_path' => $incomingPath,
-                ]
-            );
-        }
+        $logger?->debug(
+            __METHOD__ . '@' . __LINE__ . ' this rule: ' . $this->__toString(),
+            [
+                'req_method' => $method,
+                'req_incoming_path' => $incomingPath,
+            ]
+        );
 
-        if (substr($incomingPath, 0, 1) === '/') {
+        if (str_starts_with($incomingPath, '/')) {
             $incomingPath = substr($incomingPath, 1);
         }
 
         if (!$this->checkIfMatchMethod($method)) {
-            if ($logger) {
-                $logger->debug(__METHOD__ . '@' . __LINE__ . ' Method Not Match, incoming method is ' . $method);
-            }
+            $logger?->debug(__METHOD__ . '@' . __LINE__ . ' Method Not Match, incoming method is ' . $method);
             return false;
         }
 
         // Fix the bug when `$this->path` is an empty string
         if (strlen($this->path) > 0 && 0 !== stripos($incomingPath, $this->path)) {
-            if ($logger) {
-                $logger->debug(__METHOD__ . '@' . __LINE__ . ' Incoming Path Not Has Path Prefix i.e. ' . $this->path);
-            }
+            $logger?->debug(__METHOD__ . '@' . __LINE__ . ' Incoming Path Not Has Path Prefix i.e. ' . $this->path);
             return false;
         }
         $incomingPath = substr($incomingPath, strlen($this->path));
@@ -90,13 +84,11 @@ class ArkRouterAutoRestfulRule extends ArkRouterRule
         $this->callback = [];
 
         // @since 3.2.1 namespace could be class as well
-        if (class_exists($className, true)) {
+        if (class_exists($className)) {
             // namespace as class
             if (empty($components)) {
                 // it might be the root, plz use a manual restful rule
-                if ($logger) {
-                    $logger->debug(__METHOD__ . '@' . __LINE__ . ' it might be the root, plz use a manual restful rule');
-                }
+                $logger?->debug(__METHOD__ . '@' . __LINE__ . ' it might be the root, plz use a manual restful rule');
                 return false;
             }
 
@@ -105,16 +97,14 @@ class ArkRouterAutoRestfulRule extends ArkRouterRule
             // namespace as namespace
             if (empty($components) || count($components) < 2) {
                 // it might be the root, plz use a manual restful rule
-                if ($logger) {
-                    $logger->debug(__METHOD__ . '@' . __LINE__ . ' it might be the root, plz use a manual restful rule');
-                }
+                $logger?->debug(__METHOD__ . '@' . __LINE__ . ' it might be the root, plz use a manual restful rule');
                 return false;
             }
 
             while ($i < count($components)) {
                 $className .= '\\' . $components[$i];
                 $i++;
-                if (class_exists($className, true)) {
+                if (class_exists($className)) {
                     // great!
                     $this->callback[0] = $className;
                     break;
@@ -123,9 +113,7 @@ class ArkRouterAutoRestfulRule extends ArkRouterRule
         }
         // check computed callback
         if (empty($this->callback)) {
-            if ($logger) {
-                $logger->debug(__METHOD__ . '@' . __LINE__ . ' no callback available');
-            }
+            $logger?->debug(__METHOD__ . '@' . __LINE__ . ' no callback available');
             return false;
         }
 
@@ -138,29 +126,23 @@ class ArkRouterAutoRestfulRule extends ArkRouterRule
             // parameters
             $parameters = array_slice($components, $i);
             if ($foundMethod->getNumberOfRequiredParameters() > count($parameters)) {
-                if ($logger) {
-                    $logger->debug(__METHOD__ . '@' . __LINE__ . ' no enough parameters');
-                }
+                $logger?->debug(__METHOD__ . '@' . __LINE__ . ' no enough parameters');
                 return false;
             }
             $this->callback[1] = $foundMethod->getName();
             $this->setParsed($parameters);
         } catch (ReflectionException $e) {
-            if ($logger) {
-                $logger->debug(__METHOD__ . '@' . __LINE__ . ' reflection error: ' . $e->getMessage());
-            }
+            $logger?->debug(__METHOD__ . '@' . __LINE__ . ' reflection error: ' . $e->getMessage());
             return false;
         }
 
         // if match, would execute
         // call_user_func_array($this->callback,[$components]);
 
-        if ($logger) {
-            $logger->debug(__METHOD__ . '@' . __LINE__ . ' MATCHED!', [
-                'callback' => $this->callback,
-                'parsed' => $this->parsed,
-            ]);
-        }
+        $logger?->debug(__METHOD__ . '@' . __LINE__ . ' MATCHED!', [
+            'callback' => $this->callback,
+            'parsed' => $this->parsed,
+        ]);
         return true;
     }
 

@@ -34,12 +34,12 @@ class ArkWebInput
     /**
      * @var ArkWebInput
      */
-    protected static $instance;
+    protected static ArkWebInput $instance;
 
     /**
      * @return ArkWebInput
      */
-    public static function getSharedInstance()
+    public static function getSharedInstance(): ArkWebInput
     {
         if (self::$instance === null) {
             self::$instance = new ArkWebInput();

@@ -21,7 +21,7 @@ class WebInputFileUploadHelper
      *
      * @since 2.8.1 stop using anonymous function e.g. function($original_file_name, $file_type, $file_size, $file_tmp_name, $error){}
      */
-    public function handleUploadFileWithCallback($name, $fileUploadHandler, &$error = '')
+    public function handleUploadFileWithCallback(string $name, WebInputFileUploadHandlerInterface $fileUploadHandler, string &$error = ''): bool
     {
         if (!isset($_FILES[$name])) {
             return false;
@@ -41,14 +41,14 @@ class WebInputFileUploadHelper
     }
 
     /**
-     * @param $name
+     * @param string $name
      * @param WebInputFileUploadHandlerInterface $fileUploadHandler
      * @param string[] $error
      * @return bool
      *
      * @since 2.8.1 stop using anonymous function e.g. function($original_file_name, $file_type, $file_size, $file_tmp_name, $error){}
      */
-    public function handleUploadFilesWithCallback($name, $fileUploadHandler, &$error = [])
+    public function handleUploadFilesWithCallback(string $name, WebInputFileUploadHandlerInterface $fileUploadHandler, array &$error = []): bool
     {
         if (!isset($_FILES[$name]) && !is_array($_FILES[$name])) {
             return false;
@@ -80,7 +80,7 @@ class WebInputFileUploadHelper
      * @param string $code
      * @return string
      */
-    public function descUploadFileError($code)
+    public function descUploadFileError(string $code): string
     {
         $phpFileUploadErrors = array(
             UPLOAD_ERR_OK => 'There is no error, the file uploaded with success',

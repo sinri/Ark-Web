@@ -25,7 +25,7 @@ class ArkRouterRestfulRule extends ArkRouterRule
      * @param callable|string[] $callback a function with parameters in path, such as `function($post,$comment)` for above
      * @param string[] $filters ArkRequestFilter class name list
      */
-    public function __construct($methods, $path, $callback, $filters = [])
+    public function __construct(array $methods, string $path, $callback, array $filters = [])
     {
         parent::__construct();
 
@@ -52,7 +52,7 @@ class ArkRouterRestfulRule extends ArkRouterRule
      * @return ArkRouterRestfulRule
      * @deprecated since 3.1.0
      */
-    public static function buildRouteRule($methods, $path, $callback, $filters = [])
+    public static function buildRouteRule(array $methods, string $path, $callback, array $filters = []): ArkRouterRestfulRule
     {
         return new ArkRouterRestfulRule($methods, $path, $callback, $filters);
 
@@ -76,7 +76,7 @@ class ArkRouterRestfulRule extends ArkRouterRule
     /**
      * @return string
      */
-    public function getType()
+    public function getType(): string
     {
         return "ArkRouterRestfulRule";
     }

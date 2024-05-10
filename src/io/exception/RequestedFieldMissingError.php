@@ -14,7 +14,7 @@ use sinri\ark\web\exception\ArkWebRequestFailed;
  */
 class RequestedFieldMissingError extends ArkWebRequestFailed
 {
-    protected $targetFieldName;
+    protected string $targetFieldName;
 
     public function __construct(string $field, int $httpStatusCode = 200)
     {
@@ -22,7 +22,7 @@ class RequestedFieldMissingError extends ArkWebRequestFailed
         $this->targetFieldName = $field;
     }
 
-    public function getTargetFieldName()
+    public function getTargetFieldName(): string
     {
         return $this->targetFieldName;
     }

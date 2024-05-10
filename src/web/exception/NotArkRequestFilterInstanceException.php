@@ -20,7 +20,7 @@ class NotArkRequestFilterInstanceException extends Exception
      * @param int $code
      * @param Throwable|null $previous
      */
-    public function __construct($className = "", $code = 0, Throwable $previous = null)
+    public function __construct(string $className = "", int $code = 0, Throwable $previous = null)
     {
         parent::__construct("The given class name [$className] is not a subclass of ArkRequestFilter", $code, $previous);
     }

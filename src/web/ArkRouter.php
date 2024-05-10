@@ -33,28 +33,28 @@ class ArkRouter
     /**
      * @var bool
      */
-    protected $debug;
+    protected bool $debug;
     /**
      * @var ArkLogger
      */
-    protected $logger;
-    protected $defaultControllerName = null;
-    protected $defaultMethodName = null;
+    protected ArkLogger $logger;
+    protected ?string $defaultControllerName = null;
+    protected ?string $defaultMethodName = null;
     /**
-     * @var ArkRouteErrorHandlerInterface
+     * @var ArkRouteErrorHandlerInterface|null
      */
-    protected $errorHandler = null;
+    protected ?ArkRouteErrorHandlerInterface $errorHandler = null;
 
     /**
      * @var ArkRouterRule[]
      */
-    protected $rules;
+    protected array $rules;
     /**
      * @var AnnotationReader|null
      * @notice it is an experimental function
      * @since 3.5.1
      */
-    protected static $annotationReader = null;
+    protected static ?AnnotationReader $annotationReader = null;
 
     public function __construct()
     {
@@ -70,10 +70,8 @@ class ArkRouter
      * @notice it is an experimental function
      * @since 3.5.1
      */
-    public static function declareRouterUseAnnotation()
+    public static function declareRouterUseAnnotation(): void
     {
-        // Deprecated and will be removed in 2.0 but currently needed
-        AnnotationRegistry::registerLoader('class_exists');
         self::$annotationReader = new AnnotationReader();
     }
 
@@ -94,7 +92,7 @@ class ArkRouter
      * @param bool $debug
      * @return ArkRouter
      */
-    public function setDebug(bool $debug)
+    public function setDebug(bool $debug): static
     {
         $this->debug = $debug;
         return $this;
@@ -104,7 +102,7 @@ class ArkRouter
      * @param ArkLogger $logger
      * @return ArkRouter
      */
-    public function setLogger(ArkLogger $logger)
+    public function setLogger(ArkLogger $logger): static
     {
         $this->logger = $logger;
         return $this;
@@ -114,7 +112,7 @@ class ArkRouter
      * @param null|string $defaultControllerName
      * @return ArkRouter
      */
-    public function setDefaultControllerName(string $defaultControllerName)
+    public function setDefaultControllerName(?string $defaultControllerName): static
     {
         $this->defaultControllerName = $defaultControllerName;
         return $this;
@@ -124,7 +122,7 @@ class ArkRouter
      * @param null|string $defaultMethodName
      * @return ArkRouter
      */
-    public function setDefaultMethodName(string $defaultMethodName)
+    public function setDefaultMethodName(?string $defaultMethodName): static
     {
         $this->defaultMethodName = $defaultMethodName;
         return $this;
@@ -137,7 +135,7 @@ class ArkRouter
      * @param ArkRouteErrorHandlerInterface|null $errorHandler
      * @return ArkRouter
      */
-    public function setErrorHandler($errorHandler)
+    public function setErrorHandler(?ArkRouteErrorHandlerInterface $errorHandler): static
     {
         $this->errorHandler = $errorHandler;
         return $this;
@@ -148,7 +146,7 @@ class ArkRouter
      * @param int $httpCode @since 1.2.8
      * @since 3.4.8 $errorData renamed to $error, and its type might be Exception now
      */
-    public function handleRouteError(Exception $error, int $httpCode)
+    public function handleRouteError(Exception $error, int $httpCode): void
     {
         if (!$this->errorHandler) {
             $this->errorHandler = new ArkRouteErrorHandlerAsJson();
@@ -164,7 +162,7 @@ class ArkRouter
      * @param ArkRouterRule $routeRule
      * @return $this
      */
-    public function registerRouteRule($routeRule)
+    public function registerRouteRule(ArkRouterRule $routeRule): static
     {
         array_unshift($this->rules, $routeRule);
         return $this;
@@ -176,7 +174,7 @@ class ArkRouter
      * @param string[] $filters
      * @return ArkRouter
      */
-    public function registerFrontendFolder($path, $dir, $filters = [])
+    public function registerFrontendFolder(string $path, string $dir, array $filters = []): static
     {
         $staticRule = new ArkRouterStaticRule(
             [ArkWebInput::METHOD_ANY],
@@ -204,7 +202,7 @@ class ArkRouter
      * @param bool $hasFreeTail
      * @return ArkRouter
      */
-    public function get($path, $callback, $filters = [], $hasFreeTail = false)
+    public function get(string $path, callable $callback, array $filters = [], bool $hasFreeTail = false): static
     {
         if ($hasFreeTail) {
             $route_rule = new ArkRouterFreeTailRule([ArkWebInput::METHOD_GET], $path, $callback, $filters);
@@ -222,7 +220,7 @@ class ArkRouter
      * @param bool $hasFreeTail
      * @return ArkRouter
      */
-    public function post($path, $callback, $filters = [], $hasFreeTail = false)
+    public function post(string $path, callable $callback, array $filters = [], bool $hasFreeTail = false): static
     {
         if ($hasFreeTail) {
             $route_rule = new ArkRouterFreeTailRule([ArkWebInput::METHOD_POST], $path, $callback, $filters);
@@ -240,7 +238,7 @@ class ArkRouter
      * @param bool $hasFreeTail
      * @return ArkRouter
      */
-    public function put($path, $callback, $filters = [], $hasFreeTail = false)
+    public function put(string $path, callable $callback, array $filters = [], bool $hasFreeTail = false): static
     {
         if ($hasFreeTail) {
             $route_rule = new ArkRouterFreeTailRule([ArkWebInput::METHOD_PUT], $path, $callback, $filters);
@@ -258,7 +256,7 @@ class ArkRouter
      * @param bool $hasFreeTail
      * @return ArkRouter
      */
-    public function patch($path, $callback, $filters = [], $hasFreeTail = false)
+    public function patch(string $path, callable $callback, array $filters = [], bool $hasFreeTail = false): static
     {
         if ($hasFreeTail) {
             $route_rule = new ArkRouterFreeTailRule([ArkWebInput::METHOD_PATCH], $path, $callback, $filters);
@@ -276,7 +274,7 @@ class ArkRouter
      * @param bool $hasFreeTail
      * @return ArkRouter
      */
-    public function delete($path, $callback, $filters = [], $hasFreeTail = false)
+    public function delete(string $path, callable $callback, array $filters = [], bool $hasFreeTail = false): static
     {
         if ($hasFreeTail) {
             $route_rule = new ArkRouterFreeTailRule([ArkWebInput::METHOD_DELETE], $path, $callback, $filters);
@@ -294,7 +292,7 @@ class ArkRouter
      * @param bool $hasFreeTail
      * @return ArkRouter
      */
-    public function options($path, $callback, $filters = [], $hasFreeTail = false)
+    public function options(string $path, callable $callback, array $filters = [], bool $hasFreeTail = false): static
     {
         if ($hasFreeTail) {
             $route_rule = new ArkRouterFreeTailRule([ArkWebInput::METHOD_OPTIONS], $path, $callback, $filters);
@@ -312,7 +310,7 @@ class ArkRouter
      * @param bool $hasFreeTail
      * @return ArkRouter
      */
-    public function head($path, $callback, $filters = [], $hasFreeTail = false)
+    public function head(string $path, callable $callback, array $filters = [], bool $hasFreeTail = false): static
     {
         if ($hasFreeTail) {
             $route_rule = new ArkRouterFreeTailRule([ArkWebInput::METHOD_HEAD], $path, $callback, $filters);
@@ -330,7 +328,7 @@ class ArkRouter
      * @param bool $hasFreeTail
      * @return ArkRouter
      */
-    public function any($path, $callback, $filters = [], $hasFreeTail = false)
+    public function any(string $path, callable $callback, array $filters = [], bool $hasFreeTail = false): static
     {
         if ($hasFreeTail) {
             $route_rule = new ArkRouterFreeTailRule([ArkWebInput::METHOD_ANY], $path, $callback, $filters);
@@ -351,7 +349,7 @@ class ArkRouter
      * @since 2.9.2
      * @since 3.2.0 It seems, not so useful now...
      */
-    public function multiMethods($methods, $path, $callback, $filters = [], $hasFreeTail = false)
+    public function multiMethods(array $methods, string $path, callable $callback, array $filters = [], bool $hasFreeTail = false): static
     {
         //foreach ($methods as $method) {
         if ($hasFreeTail) {
@@ -370,7 +368,7 @@ class ArkRouter
      * @return ArkRouterRule
      * @throws ArkRouteNoMatchedException
      */
-    public function seekRoute($incomingPath, $method)
+    public function seekRoute(string $incomingPath, string $method): ArkRouterRule
     {
         foreach ($this->rules as $rule) {
             $matched = $rule->checkIfMatchRequest($method, $incomingPath, (($this->debug && $this->logger) ? $this->logger : null));

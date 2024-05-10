@@ -15,7 +15,7 @@ class ArkRouteErrorHandlerAsCallback implements ArkRouteErrorHandlerInterface
      * @param Exception $error
      * @param int $http_code
      */
-    public function execute(Exception $error, int $http_code)
+    public function execute(Exception $error, int $http_code): void
     {
         echo '<h1>Error</h1>' . PHP_EOL;
         echo "<p>HTTP Status Code : $http_code</p>" . PHP_EOL;

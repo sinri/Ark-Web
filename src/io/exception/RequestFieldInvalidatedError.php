@@ -14,8 +14,8 @@ use sinri\ark\web\exception\ArkWebRequestFailed;
  */
 class RequestFieldInvalidatedError extends ArkWebRequestFailed
 {
-    protected $targetFieldName;
-    protected $valueProvided;
+    protected string $targetFieldName;
+    protected mixed $valueProvided;
 
     public function __construct(string $field, $value = null, int $httpStatusCode = 200)
     {
@@ -32,9 +32,6 @@ class RequestFieldInvalidatedError extends ArkWebRequestFailed
         return $this->targetFieldName;
     }
 
-    /**
-     * @return mixed
-     */
     public function getValueProvided()
     {
         return $this->valueProvided;

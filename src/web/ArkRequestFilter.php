@@ -17,7 +17,7 @@ abstract class ArkRequestFilter
      * @param string $class_name string class name with namespace
      * @return ArkRequestFilter
      */
-    public static function makeInstance($class_name): ArkRequestFilter
+    public static function makeInstance(string $class_name): ArkRequestFilter
     {
         if (!empty($class_name)) {
             try {
@@ -41,12 +41,12 @@ abstract class ArkRequestFilter
      * @param int $injectCode
      * @return ArkRequestFilter
      */
-    protected static function generateFilter($shouldDeny, $injectError, $injectCode): ArkRequestFilter
+    protected static function generateFilter(bool $shouldDeny, string $injectError, int $injectCode): ArkRequestFilter
     {
         return new class($shouldDeny, $injectError, $injectCode) extends ArkRequestFilter {
-            protected $shouldDeny;
-            protected $injectError;
-            protected $injectCode;
+            protected bool $shouldDeny;
+            protected string $injectError;
+            protected int $injectCode;
 
             /**
              *  constructor.
@@ -54,14 +54,14 @@ abstract class ArkRequestFilter
              * @param string $injectError
              * @param int $injectCode
              */
-            public function __construct($shouldDeny, $injectError, $injectCode)
+            public function __construct(bool $shouldDeny, string $injectError, int $injectCode)
             {
                 $this->shouldDeny = $shouldDeny;
                 $this->injectError = $injectError;
                 $this->injectCode = $injectCode;
             }
 
-            public function shouldAcceptRequest($path, $method, $params, &$preparedData = null, &$responseCode = 200, &$error = null)
+            public function shouldAcceptRequest($path, $method, $params, &$preparedData = null, int &$responseCode = 200, string &$error = null): bool
             {
                 $responseCode = $this->injectCode;
                 $error = $this->injectError;//"The Ark is locked now.";
@@ -72,7 +72,7 @@ abstract class ArkRequestFilter
              * Give filter a name for Error Report
              * @return string
              */
-            public function filterTitle()
+            public function filterTitle(): string
             {
                 return "Auto-Generated Ark Filter";
             }
@@ -89,16 +89,16 @@ abstract class ArkRequestFilter
      * @param $params
      * @param mixed $preparedData
      * @param int $responseCode
-     * @param null|string $error
+     * @param string|null $error
      * @return bool
      */
-    abstract public function shouldAcceptRequest($path, $method, $params, &$preparedData = null, &$responseCode = 200, &$error = null);
+    abstract public function shouldAcceptRequest($path, $method, $params, &$preparedData = null, int &$responseCode = 200, ?string &$error = null): bool;
 
     /**
      * Give filter a name for Error Report
      * @return string
      */
-    abstract public function filterTitle();
+    abstract public function filterTitle(): string;
 
     /**
      * You can use this as `hasPrefixAmong($path,['/AdminSession/login','/FileAgent/getFile/'])`
@@ -106,14 +106,14 @@ abstract class ArkRequestFilter
      * Only pure string (case sensitive) would be taken as check rule.
      * Anyway, you may think about the shared prefix, such as '/AdminSession/loginAgain', returns true too.
      * But you should know, all the urls are designed by yourself, you can design them to avoid side effects.
-     * @param $path
+     * @param string $path
      * @param array $prefixList
      * @return bool
      */
-    public static function hasPrefixAmong($path, $prefixList = []): bool
+    public static function hasPrefixAmong(string $path, array $prefixList = []): bool
     {
         foreach ($prefixList as $prefix) {
-            if (0 === strpos($path, $prefix)) {
+            if (str_starts_with($path, $prefix)) {
                 return true;
             }
         }

@@ -24,7 +24,7 @@ class ValidateRuleForInteger extends ArkWebInputValidateRule
      * @param int $defaultValue
      * @return ValidateRuleForInteger
      */
-    public function default(int $defaultValue)
+    public function default(int $defaultValue): static
     {
         $this->defaultValue = $defaultValue;
         return $this;
@@ -35,7 +35,7 @@ class ValidateRuleForInteger extends ArkWebInputValidateRule
      * @return int|null
      * @throws ArkValidatorException
      */
-    public function getValidatedValue($inputValue)
+    public function getValidatedValue($inputValue): ?int
     {
 //        echo 'checking rule for '.json_encode($this->getFieldPath()).' | '.self::class.PHP_EOL;
 //        echo "\tagainst value ".json_encode($inputValue).PHP_EOL;
