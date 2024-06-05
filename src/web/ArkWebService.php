@@ -84,6 +84,7 @@ class ArkWebService
         $this->debug = false;
         $this->router = new ArkRouter();
         $this->sharedData = [];
+        $this->currentRequestPath='';
     }
 
     /**
