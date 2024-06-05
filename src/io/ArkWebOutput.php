@@ -40,7 +40,7 @@ class ArkWebOutput
      */
     public static function getSharedInstance(): ArkWebOutput
     {
-        if (self::$instance === null) {
+        if (!isset(self::$instance)) {
             self::$instance = new ArkWebOutput();
         }
         return self::$instance;

@@ -91,7 +91,7 @@ class ArkWebService
      */
     public static function getSharedInstance(): ArkWebService
     {
-        if (self::$instance === null) {
+        if (!isset(self::$instance)) {
             self::$instance = new ArkWebService();
         }
         return self::$instance;

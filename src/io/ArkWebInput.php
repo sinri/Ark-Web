@@ -41,7 +41,7 @@ class ArkWebInput
      */
     public static function getSharedInstance(): ArkWebInput
     {
-        if (self::$instance === null) {
+        if (!isset(self::$instance)) {
             self::$instance = new ArkWebInput();
         }
         return self::$instance;
