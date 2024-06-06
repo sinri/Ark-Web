@@ -30,7 +30,7 @@ abstract class ArkRouterRule
     /**
      * @var bool
      */
-    protected bool $forAnyMethod;
+    protected bool $forAnyMethod=false;
     /**
      * @var string[]
      */
