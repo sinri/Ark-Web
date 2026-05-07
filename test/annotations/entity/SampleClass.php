@@ -2,9 +2,6 @@
 
 namespace sinri\ark\web\test\annotations\entity;
 
-use sinri\ark\web\test\annotations\definition\MethodAnnotationB;
-use sinri\ark\web\test\annotations\definition\PropertyAnnotationA;
-
 class SampleClass
 {
     /**

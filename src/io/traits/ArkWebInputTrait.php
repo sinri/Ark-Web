@@ -92,7 +92,7 @@ trait ArkWebInputTrait
      * @since 2.6
      * @since 2.8.1 add a secondary parameter to checker when it is a callable function
      */
-    public function readIndispensableRequest(string $name, $checker = null): mixed
+    public function readIndispensableRequest(string $name, callable|string|null $checker = null): mixed
     {
         $value = $this->readRequest($name);
         if ($value === null) {
@@ -116,12 +116,13 @@ trait ArkWebInputTrait
     }
 
     /**
-     * @param string|array $name
-     * @param null|mixed $default
-     * @param null|string $regex
-     * @param null|LookUpTargetException $error
+     * @param array|string $name
+     * @param mixed|null $default
+     * @param string|null $regex
+     * @param LookUpTargetException|null $error
+     * @return mixed
      */
-    public function readRequest($name, $default = null, $regex = null, &$error = null)
+    public function readRequest(array|string $name, mixed $default = null, ?string $regex = null, ?LookUpTargetException &$error = null)
     {
         $value = ArkHelper::readTarget($_REQUEST, $name, $default, $regex, $error);
         $content_type = $this->headerHelper->getHeader("CONTENT-TYPE", null, '/^application\/json/');

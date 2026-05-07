@@ -27,7 +27,7 @@ class ArkRouterFreeTailRule extends ArkRouterRule
      * @param callable|string[] $callback a function with parameters in path, such as `function($p1,$p2,$tailComponents)` for above
      * @param string[] $filters ArkRequestFilter class name list
      */
-    public function __construct(array $methods, string $path, $callback, array $filters = [])
+    public function __construct(array $methods, string $path, array|callable $callback, array $filters = [])
     {
         parent::__construct();
 
@@ -51,12 +51,12 @@ class ArkRouterFreeTailRule extends ArkRouterRule
     /**
      * @param string[] $methods
      * @param string $path the leading components
-     * @param callable|string[] $callback a function with parameters in path, such as `function($p1,$p2,$tailComponents)` for above
+     * @param callable|array $callback a function with parameters in path, such as `function($p1,$p2,$tailComponents)` for above
      * @param string[] $filters ArkRequestFilter class name list
      * @return ArkRouterFreeTailRule
      * @deprecated since 3.1.0
      */
-    public static function buildRouteRule(array $methods, string $path, $callback, array $filters = []): ArkRouterFreeTailRule
+    public static function buildRouteRule(array $methods, string $path, callable|array $callback, array $filters = []): ArkRouterFreeTailRule
     {
         return new ArkRouterFreeTailRule($methods, $path, $callback, $filters);
     }

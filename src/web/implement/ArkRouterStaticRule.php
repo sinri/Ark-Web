@@ -25,7 +25,7 @@ class ArkRouterStaticRule extends ArkRouterRule
      * @param callable|string[] $callback a function with parameters in path, such as `function($post,$comment)` for above
      * @param String[] $filters ArkRequestFilter class name list
      */
-    public function __construct(array $methods, string $path, $callback, array $filters = [])
+    public function __construct(array $methods, string $path, array|callable $callback, array $filters = [])
     {
         parent::__construct();
 
@@ -46,7 +46,7 @@ class ArkRouterStaticRule extends ArkRouterRule
      * @return ArkRouterStaticRule
      * @deprecated since 3.1.0
      */
-    public static function buildRouteRule(array $methods, string $path, $callback, array $filters = []): ArkRouterStaticRule
+    public static function buildRouteRule(array $methods, string $path, array|callable $callback, array $filters = []): ArkRouterStaticRule
     {
         return new ArkRouterStaticRule($methods, $path, $callback, $filters);
 

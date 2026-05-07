@@ -92,7 +92,7 @@ abstract class ArkRequestFilter
      * @param string|null $error
      * @return bool
      */
-    abstract public function shouldAcceptRequest($path, $method, $params, &$preparedData = null, int &$responseCode = 200, ?string &$error = null): bool;
+    abstract public function shouldAcceptRequest($path, $method, $params, mixed &$preparedData = null, int &$responseCode = 200, ?string &$error = null): bool;
 
     /**
      * Give filter a name for Error Report

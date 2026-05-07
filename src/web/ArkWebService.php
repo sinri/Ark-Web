@@ -356,8 +356,8 @@ class ArkWebService
      * @param string $pathPrefix no leading and tail '/'
      * @param string $baseDirPath
      * @param string[] $filters ArkRequestFilter Impl Class Names
-     * @param null|callable $fileHandler e.g. function($realPath,$components):void if null, execute default downloader @since 2.7.2 added a secondary parameter in 2.8.1
-     * @param null|callable $dirHandler e.g. function($realPath,$components):void if null, use default HTML display @since 2.8.1
+     * @param callable|null $fileHandler e.g. function($realPath,$components):void if null, execute default downloader @since 2.7.2 added a secondary parameter in 2.8.1
+     * @param callable|null $dirHandler e.g. function($realPath,$components):void if null, use default HTML display @since 2.8.1
      * @return ArkRouter @since 2.8.1
      *
      * @since 2.7.1
@@ -366,7 +366,7 @@ class ArkWebService
      * binding a uri path prefix to a file system path prefix.
      *
      */
-    public function setupFileSystemViewer(string $pathPrefix, string $baseDirPath, array $filters = [], $fileHandler = null, $dirHandler = null): ArkRouter
+    public function setupFileSystemViewer(string $pathPrefix, string $baseDirPath, array $filters = [], ?callable $fileHandler = null, ?callable $dirHandler = null): ArkRouter
     {
         return $this->router->get(
             $pathPrefix,

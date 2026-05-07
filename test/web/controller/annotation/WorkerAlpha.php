@@ -2,9 +2,6 @@
 
 namespace sinri\ark\web\test\web\controller\annotation;
 
-use sinri\ark\web\annotation\definition\ClassForRoute;
-use sinri\ark\web\annotation\definition\MethodForRoute;
-
 /**
  * @ClassForRoute(
  *     method="GET",

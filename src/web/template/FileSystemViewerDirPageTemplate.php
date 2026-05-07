@@ -41,10 +41,10 @@
 
         $fileStat = stat($realPath . '/' . $item);
 
-        $fileSize = $fileStat[7];//filesize($realPath.'/'.$item);
-        $lastAccessTime = date("Y-m-d H:i:s", $fileStat[8]);
-        $lastModificationTime = date("Y-m-d H:i:s", $fileStat[9]);
-        $lastCreateTime = date("Y-m-d H:i:s", $fileStat[10]);
+        $fileSize = $fileStat["size"];//filesize($realPath.'/'.$item);
+        $lastAccessTime = date("Y-m-d H:i:s", $fileStat["atime"]);
+        $lastModificationTime = date("Y-m-d H:i:s", $fileStat["mtime"]);
+        $lastCreateTime = date("Y-m-d H:i:s", $fileStat["ctime"]);
 
         $fileSize = number_format($fileSize);
 

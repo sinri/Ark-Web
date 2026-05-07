@@ -107,13 +107,13 @@ class ArkWebController
     }
 
     /**
-     * @param string|array $name
-     * @param mixed $default
-     * @param null|string $regex
+     * @param array|string $name
+     * @param mixed|null $default
+     * @param string|null $regex
      * @return mixed
      * @since 3.1.7
      */
-    protected function _readServer($name, $default = null, $regex = null)
+    protected function _readServer(array|string $name, mixed $default = null, ?string $regex = null)
     {
         return ArkWebInput::getSharedInstance()
             ->readServer($name, $default, $regex);
@@ -128,7 +128,7 @@ class ArkWebController
      * @since 2.6
      * @since 3.4.6 parameter `checker` is default as `null`
      */
-    protected function _readIndispensableRequest(string $name, $checker = null): mixed
+    protected function _readIndispensableRequest(string $name, callable|string|null $checker = null): mixed
     {
         return ArkWebInput::getSharedInstance()
             ->readIndispensableRequest($name, $checker);
@@ -162,7 +162,7 @@ class ArkWebController
      * @param int $httpCode
      * @since 3.1.7
      */
-    protected function _sayJson($json, int $httpCode = 200): void
+    protected function _sayJson(mixed $json, int $httpCode = 200): void
     {
         ArkWebOutput::getSharedInstance()
             ->sendHTTPCode($httpCode)
@@ -171,11 +171,11 @@ class ArkWebController
     }
 
     /**
-     * @param mixed $data
+     * @param mixed|string $data
      * @param int $httpCode
-     * @param mixed $debugInfo @since 3.4.7
+     * @param mixed|null $debugInfo @since 3.4.7
      */
-    protected function _sayOK($data = "", int $httpCode = 200, $debugInfo = null): void
+    protected function _sayOK(mixed $data = "", int $httpCode = 200, mixed $debugInfo = null): void
     {
         ArkWebOutput::getSharedInstance()
             ->sendHTTPCode($httpCode)
@@ -184,12 +184,12 @@ class ArkWebController
     }
 
     /**
-     * @param mixed $error
+     * @param mixed|string $error
      * @param int $httpCode
-     * @param mixed $debugInfo @since 3.4.7
+     * @param mixed|null $debugInfo @since 3.4.7
      * @deprecated since 3.5.0 It is now recommended to use `throw new ArkWebRequestFailed` instead
      */
-    protected function _sayFail($error = "", int $httpCode = 200, $debugInfo = null): void
+    protected function _sayFail(mixed $error = "", int $httpCode = 200, mixed $debugInfo = null): void
     {
         ArkWebOutput::getSharedInstance()
             ->sendHTTPCode($httpCode)

@@ -154,7 +154,7 @@ abstract class ArkRouterRule
      * @param callable|string[] $callback
      * @return ArkRouterRule
      */
-    public function setCallback($callback): static
+    public function setCallback(array|callable $callback): static
     {
         $this->callback = $callback;
         return $this;
@@ -291,7 +291,7 @@ abstract class ArkRouterRule
      * @param int $responseCode
      * @throws ArkFilterRefuseRequestException
      */
-    protected static function executeWithFilters($params, $filter_chain, $path_string, &$preparedData = [], int &$responseCode = 200): void
+    protected static function executeWithFilters($params, $filter_chain, $path_string, array &$preparedData = [], int &$responseCode = 200): void
     {
         if (!is_array($filter_chain)) {
             $filter_chain = [$filter_chain];
@@ -322,7 +322,7 @@ abstract class ArkRouterRule
      * The parameter callable could be:
      * - (anonymous) function
      * - [class_name, method_name] -> (new class_name())->method_name
-     * - [class_instance, method_name] -> class_instance->method_name @param string[]|callable $callable
+     * - [class_instance, method_name] -> class_instance->method_name @param callable|string[] $callable
      * @param array $params
      * @throws GivenCallbackIsNotCallableException
      * @throws ArkWebRequestFailed @since 3.4.12
@@ -331,7 +331,7 @@ abstract class ArkRouterRule
      * i.e. Static Methods are not supported here.
      *
      */
-    protected static function executeWithParameters($callable, $params): void
+    protected static function executeWithParameters(array|callable $callable, array $params): void
     {
         if (is_array($callable)) {
             if (count($callable) !== 2) {
