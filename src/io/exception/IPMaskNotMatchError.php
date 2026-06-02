@@ -23,7 +23,7 @@ class IPMaskNotMatchError extends Exception
      */
     protected string $ipMask;
 
-    public function __construct($ip, $ip_mask, $code = 0, Throwable $previous = null)
+    public function __construct($ip, $ip_mask, $code = 0, ?Throwable $previous = null)
     {
         parent::__construct("IP [$ip] does not match mask [$ip_mask].", $code, $previous);
         $this->ip = $ip;

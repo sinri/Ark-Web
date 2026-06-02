@@ -31,13 +31,11 @@ class WebInputIPHelper
      */
     public function validateIP(string $ip, string $which = ''): bool
     {
-        $which = match (strtolower($which)) {
-            self::IP_TYPE_V4 => FILTER_FLAG_IPV4,
-            self::IP_TYPE_V6 => FILTER_FLAG_IPV6,
-            default => NULL,
+        return match (strtolower($which)) {
+            self::IP_TYPE_V4 => (bool)filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4),
+            self::IP_TYPE_V6 => (bool)filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6),
+            default => (bool)filter_var($ip, FILTER_VALIDATE_IP),
         };
-
-        return (bool)filter_var($ip, FILTER_VALIDATE_IP, $which);
     }
 
 

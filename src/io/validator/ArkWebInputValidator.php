@@ -66,7 +66,7 @@ class ArkWebInputValidator
      * @throws ArkValidatorException
      * @since 3.5.0 parameter `$validated` might be omitted, and it might be automatically generated, and be returned.
      */
-    public function validateWebPost(ArkWebInputValidatedEntity $validated = null): ArkWebInputValidatedEntity
+    public function validateWebPost(?ArkWebInputValidatedEntity $validated = null): ArkWebInputValidatedEntity
     {
         if ($validated === null) {
             $validated = new ArkWebInputValidatedEntity();

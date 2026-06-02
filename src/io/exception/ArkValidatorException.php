@@ -19,7 +19,7 @@ class ArkValidatorException extends Exception
     protected string $feedback;
     protected string $reason;
 
-    public function __construct(array $fieldPath, $inputValue, string $reason, string $feedback = '', $code = 0, Throwable $previous = null)
+    public function __construct(array $fieldPath, $inputValue, string $reason, string $feedback = '', $code = 0, ?Throwable $previous = null)
     {
         parent::__construct(
             strlen($feedback) > 0 ? $feedback : self::makeCauseString($fieldPath, $inputValue, $reason),

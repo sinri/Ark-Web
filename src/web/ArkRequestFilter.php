@@ -32,7 +32,7 @@ abstract class ArkRequestFilter
             }
         }
         // if not given, just make an anonymous implementation
-        return self::generateFilter(false, null, 200);
+        return self::generateFilter(false, '', 200);
     }
 
     /**
@@ -61,7 +61,7 @@ abstract class ArkRequestFilter
                 $this->injectCode = $injectCode;
             }
 
-            public function shouldAcceptRequest($path, $method, $params, &$preparedData = null, int &$responseCode = 200, string &$error = null): bool
+            public function shouldAcceptRequest($path, $method, $params, mixed &$preparedData = null, int &$responseCode = 200, ?string &$error = null): bool
             {
                 $responseCode = $this->injectCode;
                 $error = $this->injectError;//"The Ark is locked now.";

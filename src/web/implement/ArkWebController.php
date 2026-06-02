@@ -10,7 +10,6 @@ namespace sinri\ark\web\implement;
 
 
 use sinri\ark\core\ArkHelper;
-use sinri\ark\core\exception\LookUpTargetException;
 use sinri\ark\io\ArkWebInput;
 use sinri\ark\io\ArkWebOutput;
 use sinri\ark\io\exception\RequestedFieldMissingError;
@@ -37,14 +36,8 @@ class ArkWebController
 //        $this->filterGeneratedData = ArkWebService::getSharedInstance()->getSharedData();
     }
 
-    /**
-     * @param array|string $name
-     * @param mixed|null $default
-     * @param string|null $regex
-     * @return mixed
-     * @since 3.1.7
-     */
-    protected function _readFilterGeneratedData(array|string $name, mixed $default = null, ?string $regex = null): mixed
+    /** @since 3.1.7 */
+    protected function _readFilterGeneratedData(array|string $name, mixed $default = null, ?string $regex = null)
     {
         return ArkHelper::readTarget(ArkWebService::getSharedInstance()->getSharedData(), $name, $default, $regex);
     }
@@ -67,52 +60,7 @@ class ArkWebController
         return ArkWebOutput::getSharedInstance();
     }
 
-    /**
-     * @param array|string $name
-     * @param mixed|null $default
-     * @param string|null $regex
-     * @param LookUpTargetException|null $error
-     * @return mixed
-     * @since 1.1 method added
-     */
-    protected function _readRequest(array|string $name, mixed $default = null, ?string $regex = null, ?LookUpTargetException &$error = null): mixed
-    {
-        return ArkWebInput::getSharedInstance()
-            ->readRequest($name, $default, $regex, $error);
-    }
-
-    /**
-     * @param array|string $name
-     * @param mixed|null $default
-     * @param string|null $regex
-     * @return mixed
-     */
-    protected function _readCookie(array|string $name, mixed $default = null, ?string $regex = null): mixed
-    {
-        return ArkWebInput::getSharedInstance()
-            ->readCookie($name, $default, $regex);
-    }
-
-    /**
-     * @param array|string $name
-     * @param mixed|null $default
-     * @param string|null $regex
-     * @return mixed
-     * @since 3.1.7
-     */
-    protected function _readSession(array|string $name, mixed $default = null, ?string $regex = null): mixed
-    {
-        return ArkWebInput::getSharedInstance()
-            ->readSession($name, $default, $regex);
-    }
-
-    /**
-     * @param array|string $name
-     * @param mixed|null $default
-     * @param string|null $regex
-     * @return mixed
-     * @since 3.1.7
-     */
+    /** @since 3.1.7 */
     protected function _readServer(array|string $name, mixed $default = null, ?string $regex = null)
     {
         return ArkWebInput::getSharedInstance()
@@ -120,15 +68,13 @@ class ArkWebController
     }
 
     /**
-     * @param string $name
      * @param callable|string|null $checker An anonymous function `f(value,name)` or a regular expression, else would not check any more
-     * @return mixed
      * @throws RequestFieldInvalidatedError
      * @throws RequestedFieldMissingError
      * @since 2.6
      * @since 3.4.6 parameter `checker` is default as `null`
      */
-    protected function _readIndispensableRequest(string $name, callable|string|null $checker = null): mixed
+    protected function _readIndispensableRequest(string $name, callable|string|null $checker = null)
     {
         return ArkWebInput::getSharedInstance()
             ->readIndispensableRequest($name, $checker);

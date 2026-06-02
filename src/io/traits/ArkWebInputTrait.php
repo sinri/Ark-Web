@@ -24,7 +24,7 @@ trait ArkWebInputTrait
     protected WebInputIPHelper $ipHelper;
     protected WebInputFileUploadHelper $uploadFileHelper;
     protected string|false $rawPostBody;
-    protected array|null|false $rawPostBodyParsedAsJson;
+    protected array|null $rawPostBodyParsedAsJson;
 
     public function __construct()
     {
@@ -32,7 +32,8 @@ trait ArkWebInputTrait
         $this->ipHelper = new WebInputIPHelper();
         $this->uploadFileHelper = new WebInputFileUploadHelper();
         $this->rawPostBody = file_get_contents('php://input');
-        $this->rawPostBodyParsedAsJson = @json_decode($this->rawPostBody, true);
+        $decoded = @json_decode($this->rawPostBody, true);
+        $this->rawPostBodyParsedAsJson = is_array($decoded) ? $decoded : null;
     }
 
     /**
@@ -68,9 +69,9 @@ trait ArkWebInputTrait
     }
 
     /**
-     * @return mixed
+     * @return array|null
      */
-    public function getRawPostBodyParsedAsJson(): mixed
+    public function getRawPostBodyParsedAsJson(): ?array
     {
         return $this->rawPostBodyParsedAsJson;
     }
@@ -84,15 +85,12 @@ trait ArkWebInputTrait
      *  Null: throw RequestFieldInvalidatedError when the value is an empty string;
      *  Else: not check anything.
      *
-     * @param string $name
      * @param callable|string|null $checker An anonymous function `f(value,name)` or a valid regular expression, else would not check any more
-     * @return mixed
      * @throws RequestFieldInvalidatedError
      * @throws RequestedFieldMissingError
-     * @since 2.6
      * @since 2.8.1 add a secondary parameter to checker when it is a callable function
      */
-    public function readIndispensableRequest(string $name, callable|string|null $checker = null): mixed
+    public function readIndispensableRequest(string $name, callable|string|null $checker = null)
     {
         $value = $this->readRequest($name);
         if ($value === null) {
@@ -115,13 +113,6 @@ trait ArkWebInputTrait
         return $value;
     }
 
-    /**
-     * @param array|string $name
-     * @param mixed|null $default
-     * @param string|null $regex
-     * @param LookUpTargetException|null $error
-     * @return mixed
-     */
     public function readRequest(array|string $name, mixed $default = null, ?string $regex = null, ?LookUpTargetException &$error = null)
     {
         $value = ArkHelper::readTarget($_REQUEST, $name, $default, $regex, $error);
@@ -164,13 +155,9 @@ trait ArkWebInputTrait
     }
 
     /**
-     * @param $name
-     * @param null $default
-     * @param null $regex
-     * @return mixed|null
      * @since 2.3
      */
-    public function readPostedJson($name, $default = null, $regex = null): mixed
+    public function readPostedJson($name, $default = null, $regex = null)
     {
         return ArkHelper::readTarget($this->rawPostBodyParsedAsJson, $name, $default, $regex, $error);
     }

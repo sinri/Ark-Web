@@ -393,7 +393,7 @@ class ArkRouter
      * @return string[]
      * @since 3.1.10
      */
-    public function getListOfRouteRules()
+    public function getListOfRouteRules(): array
     {
         $rulePatternList = [];
         foreach ($this->rules as $rule) {

@@ -15,7 +15,7 @@ class ArkWebRequestFailed extends RuntimeException
      */
     protected array $detail;
 
-    public function __construct(string $message, array $detail = [], int $httpStatusCode = 200, Throwable $previous = null)
+    public function __construct(string $message, array $detail = [], int $httpStatusCode = 200, ?Throwable $previous = null)
     {
         parent::__construct($message, $httpStatusCode, $previous);
         $this->detail = $detail;

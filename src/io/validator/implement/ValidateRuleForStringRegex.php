@@ -16,7 +16,7 @@ class ValidateRuleForStringRegex extends ArkWebInputValidateRule
 {
     protected ?string $regex;
 
-    public function __construct(array $fieldPath, string $regex = null)
+    public function __construct(array $fieldPath, ?string $regex = null)
     {
         parent::__construct($fieldPath);
         $this->regex = $regex;

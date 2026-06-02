@@ -48,7 +48,7 @@ class ArkRouterAutoRestfulRule extends ArkRouterRule
      * @param ArkLogger|null $logger
      * @return bool
      */
-    public function checkIfMatchRequest(string $method, string $incomingPath, ArkLogger $logger = null): bool
+    public function checkIfMatchRequest(string $method, string $incomingPath, ?ArkLogger $logger = null): bool
     {
         $logger?->debug(
             __METHOD__ . '@' . __LINE__ . ' this rule: ' . $this->__toString(),

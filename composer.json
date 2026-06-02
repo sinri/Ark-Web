@@ -16,7 +16,9 @@
         "xantios/mimey": "^2.0",
         "jenssegers/agent": "^2.6",
         "doctrine/annotations": "~2.0",
-        "ext-json": "*"
+        "doctrine/lexer": "^2.1",
+        "ext-json": "*",
+        "php": ">=8.0"
     },
     "require-dev": {
         "sinri/ark-curl": "^3.0",
@@ -31,12 +33,6 @@
     "autoload-dev": {
         "psr-4": {
             "sinri\\ark\\web\\test\\": "test/"
-        }
-    },
-    "repositories": {
-        "packagist": {
-            "type": "composer",
-            "url": "https://mirrors.aliyun.com/composer/"
         }
     }
 }

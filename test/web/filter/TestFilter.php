@@ -28,7 +28,7 @@ class TestFilter extends ArkRequestFilter
      * @param string|null $error @since 2.2.0
      * @return bool
      */
-    public function shouldAcceptRequest($path, $method, $params, &$preparedData = null, int &$responseCode = 200, string &$error = null): bool
+    public function shouldAcceptRequest($path, $method, $params, mixed &$preparedData = null, int &$responseCode = 200, ?string &$error = null): bool
     {
         $x = ArkWebInput::getSharedInstance()->readRequest('token', false, '/^[A-Z]+$/');
         if ($x == 'wrong_token') {

@@ -8,6 +8,7 @@
 
 namespace sinri\ark\web;
 
+use Closure;
 use sinri\ark\core\ArkLogger;
 use sinri\ark\io\ArkWebInput;
 use sinri\ark\web\exception\ArkFilterRefuseRequestException;
@@ -143,9 +144,9 @@ abstract class ArkRouterRule
     }
 
     /**
-     * @return callable|string[]
+     * @return array|callable|Closure
      */
-    public function getCallback()
+    public function getCallback(): array|callable|Closure
     {
         return $this->callback;
     }
