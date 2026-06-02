@@ -9,17 +9,16 @@
 namespace sinri\ark\web;
 
 
-use Doctrine\Common\Annotations\AnnotationReader;
 use Exception;
 use Psr\Log\LogLevel;
 use ReflectionClass;
 use ReflectionException;
-use RuntimeException;
+use ReflectionMethod;
 use sinri\ark\core\ArkLogger;
 use sinri\ark\io\ArkWebInput;
 use sinri\ark\io\ArkWebOutput;
-use sinri\ark\web\annotation\definition\ClassForRoute;
-use sinri\ark\web\annotation\definition\MethodForRoute;
+use sinri\ark\web\attribute\ClassForRoute;
+use sinri\ark\web\attribute\MethodForRoute;
 use sinri\ark\web\exception\ArkRouteNoMatchedException;
 use sinri\ark\web\implement\ArkRouteErrorHandlerAsJson;
 use sinri\ark\web\implement\ArkRouterAutoRestfulRule;
@@ -48,12 +47,6 @@ class ArkRouter
      * @var ArkRouterRule[]
      */
     protected array $rules;
-    /**
-     * @var AnnotationReader|null
-     * @notice it is an experimental function
-     * @since 3.5.1
-     */
-    protected static ?AnnotationReader $annotationReader = null;
 
     public function __construct()
     {
@@ -63,28 +56,6 @@ class ArkRouter
         $this->defaultMethodName = 'index';
         $this->errorHandler = null;
         $this->rules = [];
-    }
-
-    /**
-     * @notice it is an experimental function
-     * @since 3.5.1
-     */
-    public static function declareRouterUseAnnotation(): void
-    {
-        self::$annotationReader = new AnnotationReader();
-    }
-
-    /**
-     * @return AnnotationReader
-     * @notice it is an experimental function
-     * @since 3.5.1
-     */
-    protected function getAnnotationReader(): AnnotationReader
-    {
-        if (self::$annotationReader !== null) {
-            return self::$annotationReader;
-        }
-        throw new RuntimeException("Run ArkRouter::declareRouterUseAnnotation() first!");
     }
 
     /**
@@ -585,17 +556,12 @@ class ArkRouter
      * @return $this
      * @throws ReflectionException
      *
-     * ClassForRoute　と　MethodForRoute　という標記をしたコントローラークラスとその中のメソッドを自動的にルートを登録。
+     * ClassForRoute と MethodForRoute という標記をしたコントローラークラスとその中のメソッドを自動的にルートを登録。
      * @notice it is an experimental function
      * @since 3.5.1
      */
-    public function loadRoutesWithAnnotationInDirectory(string $directory, string $controllerNamespaceBase = ''): static
+    public function loadRoutesWithAttributeInDirectory(string $directory, string $controllerNamespaceBase = ''): static
     {
-        /*
-         * Ensure the following
-         * // Deprecated and will be removed in 2.0 but currently needed
-         *  AnnotationRegistry::registerLoader('class_exists');
-         */
         if (!file_exists($directory) || !is_dir($directory)) {
             if ($this->debug) {
                 $this->logger->debug(__METHOD__ . '@' . __LINE__ . " warning: this is not a directory: " . $directory);
@@ -604,28 +570,24 @@ class ArkRouter
             while (false !== ($entry = readdir($handle))) {
                 if ($entry != "." && $entry != "..") {
                     if (is_dir($directory . '/' . $entry)) {
-                        //DIR,
-                        $this->loadRoutesWithAnnotationInDirectory(
+                        $this->loadRoutesWithAttributeInDirectory(
                             $directory . '/' . $entry,
                             $controllerNamespaceBase . $entry . '\\'
                         );
                     } else {
-                        //FILE
                         $list = explode('.', $entry);
                         $controllerClassName = $list[0] ?? '';
 
                         $reflectionClass = new ReflectionClass($controllerNamespaceBase . $controllerClassName);
-                        $classForRoute = $this->getAnnotationReader()->getClassAnnotation($reflectionClass, ClassForRoute::class);
+                        $classForRoute = $this->getClassAttribute($reflectionClass, ClassForRoute::class);
 
                         $reflectionClassMethodList = $reflectionClass->getMethods();
                         foreach ($reflectionClassMethodList as $reflectionMethod) {
                             if (!$reflectionMethod->isPublic()) {
-                                // not public method, not for route
                                 continue;
                             }
-                            $methodForRoute = $this->getAnnotationReader()->getMethodAnnotation($reflectionMethod, MethodForRoute::class);
+                            $methodForRoute = $this->getMethodAttribute($reflectionMethod, MethodForRoute::class);
                             if ($methodForRoute !== null) {
-                                // use method level annotation if declared first
                                 $this->multiMethods(
                                     $methodForRoute->getMethods(),
                                     $methodForRoute->path,
@@ -636,7 +598,6 @@ class ArkRouter
                                 continue;
                             }
                             if ($classForRoute !== null) {
-                                // use class level annotation, auto generate routes for each method
                                 $min = $reflectionMethod->getNumberOfRequiredParameters();
                                 $max = $reflectionMethod->getNumberOfParameters();
                                 $pathTail = '';
@@ -662,5 +623,43 @@ class ArkRouter
             closedir($handle);
         }
         return $this;
+    }
+
+    /**
+     * @deprecated use loadRoutesWithAttributeInDirectory() instead
+     */
+    public function loadRoutesWithAnnotationInDirectory(string $directory, string $controllerNamespaceBase = ''): static
+    {
+        return $this->loadRoutesWithAttributeInDirectory($directory, $controllerNamespaceBase);
+    }
+
+    /**
+     * @template T of object
+     * @param ReflectionClass $reflectionClass
+     * @param class-string<T> $attributeClass
+     * @return T|null
+     */
+    private function getClassAttribute(ReflectionClass $reflectionClass, string $attributeClass): ?object
+    {
+        $attributes = $reflectionClass->getAttributes($attributeClass);
+        if ($attributes === []) {
+            return null;
+        }
+        return $attributes[0]->newInstance();
+    }
+
+    /**
+     * @template T of object
+     * @param ReflectionMethod $reflectionMethod
+     * @param class-string<T> $attributeClass
+     * @return T|null
+     */
+    private function getMethodAttribute(ReflectionMethod $reflectionMethod, string $attributeClass): ?object
+    {
+        $attributes = $reflectionMethod->getAttributes($attributeClass);
+        if ($attributes === []) {
+            return null;
+        }
+        return $attributes[0]->newInstance();
     }
 }

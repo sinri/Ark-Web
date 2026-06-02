@@ -15,8 +15,6 @@
         "ralouphie/getallheaders": "^3.0",
         "xantios/mimey": "^2.0",
         "jenssegers/agent": "^2.6",
-        "doctrine/annotations": "~2.0",
-        "doctrine/lexer": "^2.1",
         "ext-json": "*",
         "php": ">=8.0"
     },

@@ -2,20 +2,13 @@
 
 namespace sinri\ark\web\test\web\controller\annotation;
 
-/**
- * @ClassForRoute(
- *     method="GET",
- *     path="annotation/alpha"
- * )
- */
+use sinri\ark\web\attribute\ClassForRoute;
+use sinri\ark\web\attribute\MethodForRoute;
+
+#[ClassForRoute(method: 'GET', path: 'annotation/alpha')]
 class WorkerAlpha
 {
-    /**
-     * @MethodForRoute(
-     *     method={"GET","POST"},
-     *     path="annotation/alpha/go/{p1}"
-     * )
-     */
+    #[MethodForRoute(method: ['GET', 'POST'], path: 'annotation/alpha/go/{p1}')]
     public function go($p1 = 'P1')
     {
         echo __METHOD__ . '(p1=' . $p1 . ')';

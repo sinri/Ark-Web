@@ -35,8 +35,6 @@ $web_service->setDebug(false);
 $web_service->setLogger($logger);
 $router = $web_service->getRouter();
 
-ArkRouter::declareRouterUseAnnotation();
-
 $router->setDebug(false);
 $router->setLogger($logger);
 
@@ -135,7 +133,7 @@ $router->get('test-another-filter', function () {
 //$routeRuleList=$router->getListOfRouteRules();
 //var_dump($routeRuleList);
 
-$router->loadRoutesWithAnnotationInDirectory(__DIR__ . '/controller/annotation', 'sinri\ark\web\test\web\controller\annotation\\');
+$router->loadRoutesWithAttributeInDirectory(__DIR__ . '/controller/annotation', 'sinri\ark\web\test\web\controller\annotation\\');
 
 $web_service->handleRequestForWeb();
 
